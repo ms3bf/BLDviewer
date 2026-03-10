@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   const faces = ["U", "R", "F", "D", "L", "B"];
   const colorOptions = [
     { code: "y", vector: [0, 1, 0], hex: "#fefe00" },
@@ -9,11 +9,28 @@
     { code: "g", vector: [0, 0, -1], hex: "#00d800" }
   ];
   const storageKey = "bldviewer-numbering-v1";
+  const massanByColor = {
+    w: ["あ", "あ", "い", "え", "", "い", "え", "う", "う"],
+    b: ["か", "か", "き", "け", "", "き", "け", "く", "く"],
+    r: ["さ", "さ", "し", "せ", "", "し", "せ", "す", "す"],
+    g: ["た", "た", "ち", "て", "", "ち", "て", "つ", "つ"],
+    o: ["な", "な", "に", "ね", "", "に", "ね", "ぬ", "ぬ"],
+    y: ["は", "は", "ひ", "へ", "", "ひ", "へ", "ふ", "ふ"]
+  };
+  const speffzByFace = {
+    U: ["A", "A", "B", "D", "", "B", "D", "C", "C"],
+    L: ["E", "E", "F", "H", "", "F", "H", "G", "G"],
+    F: ["I", "I", "J", "L", "", "J", "L", "K", "K"],
+    R: ["M", "M", "N", "P", "", "N", "P", "O", "O"],
+    B: ["Q", "Q", "R", "T", "", "R", "T", "S", "S"],
+    D: ["U", "U", "V", "X", "", "V", "X", "W", "W"]
+  };
   const state = {
     uColor: "y",
     fColor: "b",
     labels: {},
     statusKey: "",
+    statusArgs: null,
     visible: false
   };
 
@@ -28,7 +45,9 @@
     status: document.querySelector("#numbering-status"),
     save: document.querySelector("#numbering-save"),
     reset: document.querySelector("#numbering-reset"),
-    toggle: document.querySelector("#numbering-toggle")
+    toggle: document.querySelector("#numbering-toggle"),
+    presetMassan: document.querySelector("#numbering-preset-massan"),
+    presetSpeffz: document.querySelector("#numbering-preset-speffz")
   };
 
   function t(key, args) {
@@ -92,6 +111,19 @@
     return false;
   }
 
+  function ensureValidOrientation() {
+    const uOption = optionByCode(state.uColor);
+    const fOption = optionByCode(state.fColor);
+    const invalid = !uOption || !fOption || state.uColor === state.fColor || vectorKey(uOption.vector) === vectorKey(negate(fOption.vector));
+    if (!invalid) {
+      return;
+    }
+    const fallback = colorOptions.find(function (option) {
+      return option.code !== state.uColor && vectorKey(option.vector) !== vectorKey(negate(uOption.vector));
+    });
+    state.fColor = fallback ? fallback.code : "b";
+  }
+
   function buildOrientation() {
     ensureValidOrientation();
     const up = optionByCode(state.uColor).vector;
@@ -140,18 +172,19 @@
     }));
   }
 
-  function setStatus(key) {
+  function setStatus(key, args) {
     state.statusKey = key;
-    elements.status.textContent = key ? t(key) : "";
+    state.statusArgs = args || null;
+    elements.status.textContent = key ? t(key, args) : "";
   }
 
-  function saveState(messageKey) {
+  function saveState(messageKey, messageArgs) {
     localStorage.setItem(storageKey, JSON.stringify({
       uColor: state.uColor,
       fColor: state.fColor,
       labels: state.labels
     }));
-    setStatus(messageKey);
+    setStatus(messageKey, messageArgs);
     emitChange();
     emitSaved();
   }
@@ -161,21 +194,39 @@
     return trimmed ? Array.from(trimmed)[0] : "";
   }
 
-  function ensureValidOrientation() {
-    const uOption = optionByCode(state.uColor);
-    const fOption = optionByCode(state.fColor);
-    const invalid = !uOption || !fOption || state.uColor === state.fColor || vectorKey(uOption.vector) === vectorKey(negate(fOption.vector));
-    if (!invalid) {
-      return;
-    }
-    const fallback = colorOptions.find(function (option) {
-      return option.code !== state.uColor && vectorKey(option.vector) !== vectorKey(negate(uOption.vector));
-    });
-    state.fColor = fallback ? fallback.code : "b";
-  }
-
   function faceKey(face, index) {
     return face + String(index);
+  }
+
+  function assignFaceLabels(face, labels) {
+    labels.forEach(function (label, index) {
+      if (index !== 4) {
+        state.labels[faceKey(face, index)] = label || "";
+      }
+    });
+  }
+
+  function applyMassanPreset() {
+    state.uColor = "w";
+    state.fColor = "g";
+    state.labels = {};
+    const orientation = buildOrientation();
+    faces.forEach(function (face) {
+      assignFaceLabels(face, massanByColor[orientation[face].code] || massanByColor.w);
+    });
+    renderNet();
+    saveState("numbering.presetApplied", { name: t("numbering.massan") });
+  }
+
+  function applySpeffzPreset() {
+    state.uColor = "w";
+    state.fColor = "g";
+    state.labels = {};
+    Object.keys(speffzByFace).forEach(function (face) {
+      assignFaceLabels(face, speffzByFace[face]);
+    });
+    renderNet();
+    saveState("numbering.presetApplied", { name: t("numbering.speffz") });
   }
 
   function netCell(face, index, orientation) {
@@ -302,11 +353,14 @@
     }));
   });
 
+  elements.presetMassan.addEventListener("click", applyMassanPreset);
+  elements.presetSpeffz.addEventListener("click", applySpeffzPreset);
+
   if (i18n()) {
     i18n().subscribe(function () {
       renderNet();
       updateToggleText();
-      setStatus(state.statusKey);
+      setStatus(state.statusKey, state.statusArgs);
     });
   }
 })();

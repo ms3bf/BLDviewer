@@ -395,42 +395,6 @@
     };
   }
 
-  function normalizeColor(value) {
-    if (!value) {
-      return "";
-    }
-    const trimmed = String(value).trim().toLowerCase();
-    if (!trimmed) {
-      return "";
-    }
-    if (trimmed.charAt(0) === "#") {
-      if (trimmed.length === 4) {
-        return "#" + trimmed.charAt(1) + trimmed.charAt(1) + trimmed.charAt(2) + trimmed.charAt(2) + trimmed.charAt(3) + trimmed.charAt(3);
-      }
-      return trimmed;
-    }
-    const match = trimmed.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-    if (!match) {
-      return trimmed;
-    }
-    return "#" + [match[1], match[2], match[3]].map(function (channel) {
-      return Number(channel).toString(16).padStart(2, "0");
-    }).join("");
-  }
-
-  function expectedCenterColors(renderOptions) {
-    const colors = {};
-    faceIndex.forEach(function (face, faceOffset) {
-      const centerIndex = faceOffset * 9 + 4;
-      colors[face] = normalizeColor(renderOptions.stickerColors[centerIndex]);
-    });
-    return colors;
-  }
-
-  function extractPolygonFill(polygon) {
-    return normalizeColor(polygon.getAttribute("fill") || window.getComputedStyle(polygon).fill);
-  }
-
   function isCornerIndex(index) {
     const row = Math.floor(index / 3);
     const col = index % 3;
@@ -461,7 +425,6 @@
     if (!svg) {
       return [];
     }
-    const centerColors = expectedCenterColors(renderOptions);
     return Array.from(svg.querySelectorAll("g")).map(function (group, groupIndex) {
       const polygons = Array.from(group.querySelectorAll("polygon"));
       if (polygons.length !== 9) {
@@ -473,13 +436,8 @@
       const average = centers.reduce(function (sum, center) {
         return { x: sum.x + center.x, y: sum.y + center.y };
       }, { x: 0, y: 0 });
-      const centerFill = extractPolygonFill(polygons[4]);
-      const matchedFace = Object.keys(centerColors).find(function (face) {
-        return centerColors[face] === centerFill;
-      }) || null;
       return {
         groupIndex: groupIndex,
-        face: matchedFace,
         center: { x: average.x / centers.length, y: average.y / centers.length },
         stickers: centers
       };
@@ -561,22 +519,7 @@
       return;
     }
     const faceGroups = buildVisibleFaceGroups(renderOptions);
-    const faceToGroup = {};
-    faceGroups.forEach(function (group) {
-      if (group.face) {
-        faceToGroup[group.face] = group;
-      }
-    });
-    const fallbackFaces = buildVisibleFaces(renderOptions).filter(function (face) {
-      return !faceToGroup[face.face];
-    });
-    const fallbackGroups = faceGroups.filter(function (group) {
-      return !group.face;
-    });
-    const fallbackMap = mapFacesToGroups(fallbackFaces, fallbackGroups);
-    Object.keys(fallbackMap).forEach(function (face) {
-      faceToGroup[face] = fallbackMap[face];
-    });
+    const faceToGroup = mapFacesToGroups(buildVisibleFaces(renderOptions), faceGroups);
     const labels = buildStickerState(renderOptions).filter(function (entry) {
       return Boolean(faceToGroup[entry.face] && faceToGroup[entry.face].stickers[entry.index]);
     });
