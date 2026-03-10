@@ -160,7 +160,8 @@ label {
 }
 
 .drag-card,
-.mask-help-card {
+.mask-help-card,
+.cycle-card {
   display: grid;
   gap: 10px;
   padding: 14px;
@@ -169,7 +170,8 @@ label {
   background: rgba(255, 249, 238, 0.72);
 }
 
-.mask-help-card {
+.mask-help-card,
+.cycle-card {
   align-content: start;
   color: var(--muted);
   font-size: 0.9rem;
@@ -502,4 +504,17 @@ textarea {
   paint-order: stroke;
   stroke: rgba(255, 255, 255, 0.75);
   stroke-width: 0.02px;
+}
+
+
+.cycle-help,
+.cycle-status {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.cycle-status[data-state="error"] {
+  color: var(--accent-strong);
+  font-weight: 600;
 }

@@ -224,6 +224,22 @@
             Arrows
             <input id="arw" name="arw" type="text" value="" placeholder="U0U2,R6R2R0-s8-i5-yellow" />
           </label>
+
+          <div class="cycle-card">
+            <div class="control-head">
+              <span>Piece Cycles</span>
+            </div>
+            <label>
+              Edge 2-cycle / 3-cycle
+              <input id="edge-cycle" name="edgeCycle" type="text" value="" placeholder="UR DF BR" />
+            </label>
+            <label>
+              Corner 2-cycle / 3-cycle
+              <input id="corner-cycle" name="cornerCycle" type="text" value="" placeholder="UBL DBR" />
+            </label>
+            <p class="cycle-help">Enter 2 or 3 piece names separated by spaces. The first sticker letter is used as the arrow anchor.</p>
+            <p id="cycle-status" class="cycle-status" data-state="info"></p>
+          </div>
         </form>
 
         <section class="preview-panel">

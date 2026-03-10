@@ -151,7 +151,7 @@
     const face = faceFromNormal(sticker.normal);
     const [x, y, z] = sticker.pos;
     switch (face) {
-      case "U": return { face: face, row: 1 - z, col: x + 1 };
+      case "U": return { face: face, row: z + 1, col: x + 1 };
       case "R": return { face: face, row: 1 - y, col: 1 - z };
       case "F": return { face: face, row: 1 - y, col: x + 1 };
       case "D": return { face: face, row: 1 - z, col: x + 1 };

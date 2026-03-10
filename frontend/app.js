@@ -23,6 +23,9 @@
     co: document.querySelector("#co"),
     dist: document.querySelector("#dist"),
     arw: document.querySelector("#arw"),
+    edgeCycle: document.querySelector("#edge-cycle"),
+    cornerCycle: document.querySelector("#corner-cycle"),
+    cycleStatus: document.querySelector("#cycle-status"),
     previewCube: document.querySelector("#preview-cube"),
     previewStatus: document.querySelector("#preview-status"),
     generatedUrl: document.querySelector("#generated-url"),
@@ -44,6 +47,8 @@
     baseZ: 0
   };
   const defaultSchemeFaces = ["u", "r", "f", "d", "l", "b"];
+  const faceIndex = ["U", "R", "F", "D", "L", "B"];
+  const pieceAnchorMap = createPieceAnchorMap();
 
   elements.endpoint.value = defaultEndpoint;
 
@@ -215,12 +220,175 @@
     return stickerColors;
   }
 
-  function buildArrows() {
-    const raw = elements.arw.value.trim();
-    if (!raw) {
-      return undefined;
+  function makeSticker(face, row, col) {
+    const map = {
+      U: { pos: [col - 1, 1, 1 - row], normal: [0, 1, 0] },
+      R: { pos: [1, 1 - row, 1 - col], normal: [1, 0, 0] },
+      F: { pos: [col - 1, 1 - row, 1], normal: [0, 0, 1] },
+      D: { pos: [col - 1, -1, 1 - row], normal: [0, -1, 0] },
+      L: { pos: [-1, 1 - row, col - 1], normal: [-1, 0, 0] },
+      B: { pos: [1 - col, 1 - row, -1], normal: [0, 0, -1] }
+    };
+    return {
+      face: face,
+      pos: map[face].pos.slice(),
+      normal: map[face].normal.slice()
+    };
+  }
+
+  function faceFromNormal(normal) {
+    const key = normal.join(",");
+    const lookup = {
+      "0,1,0": "U",
+      "1,0,0": "R",
+      "0,0,1": "F",
+      "0,-1,0": "D",
+      "-1,0,0": "L",
+      "0,0,-1": "B"
+    };
+    return lookup[key];
+  }
+
+  function rowColFromSticker(sticker) {
+    const face = faceFromNormal(sticker.normal);
+    const x = sticker.pos[0];
+    const y = sticker.pos[1];
+    const z = sticker.pos[2];
+    switch (face) {
+      case "U": return { face: face, row: z + 1, col: x + 1 };
+      case "R": return { face: face, row: 1 - y, col: 1 - z };
+      case "F": return { face: face, row: 1 - y, col: x + 1 };
+      case "D": return { face: face, row: 1 - z, col: x + 1 };
+      case "L": return { face: face, row: 1 - y, col: z + 1 };
+      case "B": return { face: face, row: 1 - y, col: 1 - x };
+      default: return { face: face, row: 1, col: 1 };
     }
-    return raw;
+  }
+
+  function createPieceAnchorMap() {
+    const stickers = [];
+    const groups = {};
+    const map = {
+      2: {},
+      3: {}
+    };
+
+    faceIndex.forEach(function (face) {
+      for (let row = 0; row < 3; row += 1) {
+        for (let col = 0; col < 3; col += 1) {
+          if (row === 1 && col === 1) {
+            continue;
+          }
+          stickers.push(makeSticker(face, row, col));
+        }
+      }
+    });
+
+    stickers.forEach(function (sticker) {
+      const key = sticker.pos.join(",");
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(sticker);
+    });
+
+    Object.keys(groups).forEach(function (key) {
+      const group = groups[key];
+      if (group.length !== 2 && group.length !== 3) {
+        return;
+      }
+      const faces = group.map(function (sticker) {
+        return faceFromNormal(sticker.normal);
+      });
+      const pieceKey = faces.slice().sort().join("");
+      const anchors = {};
+      group.forEach(function (sticker) {
+        const placement = rowColFromSticker(sticker);
+        anchors[placement.face] = placement.face + String(placement.row * 3 + placement.col);
+      });
+      map[group.length][pieceKey] = anchors;
+    });
+
+    return map;
+  }
+
+  function resolvePieceToken(token, expectedLength) {
+    const normalized = (token || "").trim().toUpperCase();
+    if (normalized.length !== expectedLength) {
+      throw new Error("Expected " + expectedLength + " letters per piece: " + token);
+    }
+    const key = normalized.split("").sort().join("");
+    const anchors = pieceAnchorMap[expectedLength][key];
+    if (!anchors) {
+      throw new Error("Unknown piece: " + token);
+    }
+    const anchor = anchors[normalized.charAt(0)];
+    if (!anchor) {
+      throw new Error("Unsupported orientation for piece: " + token);
+    }
+    return anchor;
+  }
+
+  function buildCycleArrowSet(value, expectedLength) {
+    const tokens = (value || "").trim().toUpperCase().split(/\s+/).filter(Boolean);
+    if (!tokens.length) {
+      return [];
+    }
+    if (tokens.length !== 2 && tokens.length !== 3) {
+      throw new Error("Use 2 or 3 pieces separated by spaces.");
+    }
+    const anchors = tokens.map(function (token) {
+      return resolvePieceToken(token, expectedLength);
+    });
+    const arrows = [];
+    for (let index = 0; index < anchors.length; index += 1) {
+      const nextIndex = (index + 1) % anchors.length;
+      arrows.push(anchors[index] + anchors[nextIndex] + "-s8");
+      if (anchors.length === 2) {
+        break;
+      }
+    }
+    if (anchors.length === 2) {
+      arrows.push(anchors[1] + anchors[0] + "-s8");
+    }
+    return arrows;
+  }
+
+  function setCycleStatus(message, isError) {
+    elements.cycleStatus.textContent = message;
+    elements.cycleStatus.dataset.state = isError ? "error" : "info";
+  }
+
+  function buildArrows() {
+    const arrows = [];
+    const manual = elements.arw.value.trim();
+    if (manual) {
+      arrows.push(manual);
+    }
+
+    const notices = [];
+
+    try {
+      arrows.push.apply(arrows, buildCycleArrowSet(elements.edgeCycle.value, 2));
+    } catch (error) {
+      notices.push("Edge cycle: " + error.message);
+    }
+
+    try {
+      arrows.push.apply(arrows, buildCycleArrowSet(elements.cornerCycle.value, 3));
+    } catch (error) {
+      notices.push("Corner cycle: " + error.message);
+    }
+
+    if (notices.length) {
+      setCycleStatus(notices.join(" "), true);
+    } else if (elements.edgeCycle.value.trim() || elements.cornerCycle.value.trim()) {
+      setCycleStatus("Piece notation converted to VisualCube arrows.", false);
+    } else {
+      setCycleStatus("Enter 2 or 3 edge/corner pieces to generate arrows.", false);
+    }
+
+    return arrows.length ? arrows.join(",") : undefined;
   }
 
   function buildExportUrl() {
@@ -249,7 +417,7 @@
       params.set("fd", fd);
     }
 
-    const arw = elements.arw.value.trim();
+    const arw = buildArrows();
     if (arw) {
       params.set("arw", arw);
     }
@@ -395,5 +563,6 @@
 
   syncNumericControls();
   updateDragModeLabel();
+  setCycleStatus("Enter 2 or 3 edge/corner pieces to generate arrows.", false);
   renderPreview();
 })();
