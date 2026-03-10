@@ -499,17 +499,52 @@ input[type="range"] {
   }
 
   .grid.two,
-  .grid.three,
-  .numbering-net {
+  .grid.three {
     grid-template-columns: 1fr;
+  }
+
+  .numbering-net {
+    grid-template-columns: repeat(4, minmax(62px, 1fr));
+    gap: 8px;
+  }
+
+  .net-face {
+    gap: 4px;
+  }
+
+  .net-face-label {
+    font-size: 0.72rem;
+  }
+
+  .net-grid {
+    gap: 4px;
+  }
+
+  .net-sticker {
+    border-radius: 8px;
+  }
+
+  .net-sticker input,
+  .net-sticker button {
+    font-size: 0.9rem;
+  }
+
+  .numbering-presets {
+    gap: 6px;
+  }
+
+  .numbering-presets .button {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+  }
+
+  .preset-label {
+    font-size: 0.78rem;
+    flex-basis: 100%;
   }
 
   .control-row {
     grid-template-columns: 1fr;
-  }
-
-  .net-face[data-face] {
-    grid-column: auto;
   }
 }
 .workspace > .preview-panel {
