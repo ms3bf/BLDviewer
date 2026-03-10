@@ -334,14 +334,14 @@
       return named[color.toLowerCase()] || color;
     }
 
-    return new visualizer.Arrow(
-      { face: faceRef(match[2]), n: Number(match[3]) },
-      { face: faceRef(match[5]), n: Number(match[6]) },
-      colorRef(match[15]),
-      match[7] ? { face: faceRef(match[8]), n: Number(match[9]) } : undefined,
-      match[11] ? Number(match[11]) : 10,
-      match[13] ? Number(match[13]) : 10
-    );
+    return {
+      s1: { face: faceRef(match[2]), n: Number(match[3]) },
+      s2: { face: faceRef(match[5]), n: Number(match[6]) },
+      s3: match[7] ? { face: faceRef(match[8]), n: Number(match[9]) } : undefined,
+      color: colorRef(match[15]),
+      scale: match[11] ? Number(match[11]) : 10,
+      influence: match[13] ? Number(match[13]) : 10
+    };
   }
 
   function buildPreviewArrows(arrows) {
