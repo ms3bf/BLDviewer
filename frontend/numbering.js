@@ -64,40 +64,12 @@
         state.uColor = saved.uColor || state.uColor;
         state.fColor = saved.fColor || state.fColor;
         state.labels = saved.labels || state.labels;
+        return true;
       }
     } catch (error) {
       state.labels = {};
     }
-  }
-
-  function emitChange() {
-    window.dispatchEvent(new CustomEvent("bldviewer:numbering-changed", {
-      detail: api.getState()
-    }));
-  }
-
-  function saveState(message) {
-    localStorage.setItem(storageKey, JSON.stringify(state));
-    elements.status.textContent = message;
-    emitChange();
-  }
-
-  function sanitizeCharacter(value) {
-    const trimmed = value.trim();
-    return trimmed ? Array.from(trimmed)[0] : "";
-  }
-
-  function ensureValidOrientation() {
-    const uOption = optionByCode(state.uColor);
-    const fOption = optionByCode(state.fColor);
-    const invalid = !uOption || !fOption || state.uColor === state.fColor || vectorKey(uOption.vector) === vectorKey(negate(fOption.vector));
-    if (!invalid) {
-      return;
-    }
-    const fallback = colorOptions.find(function (option) {
-      return option.code !== state.uColor && vectorKey(option.vector) !== vectorKey(negate(uOption.vector));
-    });
-    state.fColor = fallback ? fallback.code : "b";
+    return false;
   }
 
   function buildOrientation() {
@@ -117,6 +89,60 @@
       B: lookup[vectorKey(negate(front))],
       L: lookup[vectorKey(negate(right))]
     };
+  }
+
+  function buildSchemeString() {
+    const orientation = buildOrientation();
+    return faces.map(function (face) {
+      return orientation[face].code;
+    }).join("");
+  }
+
+  function apiState() {
+    return {
+      uColor: state.uColor,
+      fColor: state.fColor,
+      labels: Object.assign({}, state.labels),
+      orientation: buildOrientation(),
+      scheme: buildSchemeString()
+    };
+  }
+
+  function emitChange() {
+    window.dispatchEvent(new CustomEvent("bldviewer:numbering-changed", {
+      detail: apiState()
+    }));
+  }
+
+  function emitSaved() {
+    window.dispatchEvent(new CustomEvent("bldviewer:numbering-saved", {
+      detail: apiState()
+    }));
+  }
+
+  function saveState(message) {
+    localStorage.setItem(storageKey, JSON.stringify(state));
+    elements.status.textContent = message;
+    emitChange();
+    emitSaved();
+  }
+
+  function sanitizeCharacter(value) {
+    const trimmed = value.trim();
+    return trimmed ? Array.from(trimmed)[0] : "";
+  }
+
+  function ensureValidOrientation() {
+    const uOption = optionByCode(state.uColor);
+    const fOption = optionByCode(state.fColor);
+    const invalid = !uOption || !fOption || state.uColor === state.fColor || vectorKey(uOption.vector) === vectorKey(negate(fOption.vector));
+    if (!invalid) {
+      return;
+    }
+    const fallback = colorOptions.find(function (option) {
+      return option.code !== state.uColor && vectorKey(option.vector) !== vectorKey(negate(uOption.vector));
+    });
+    state.fColor = fallback ? fallback.code : "b";
   }
 
   function faceKey(face, index) {
@@ -197,12 +223,7 @@
 
   const api = {
     getState: function () {
-      return {
-        uColor: state.uColor,
-        fColor: state.fColor,
-        labels: Object.assign({}, state.labels),
-        orientation: buildOrientation()
-      };
+      return apiState();
     }
   };
 
@@ -210,9 +231,12 @@
 
   populateSelect(elements.uColor);
   populateSelect(elements.fColor);
-  loadState();
+  const loadedFromStorage = loadState();
   renderNet();
   emitChange();
+  if (loadedFromStorage) {
+    emitSaved();
+  }
 
   elements.uColor.addEventListener("change", function () {
     state.uColor = elements.uColor.value;
