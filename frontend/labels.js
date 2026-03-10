@@ -395,6 +395,42 @@
     };
   }
 
+  function normalizeColor(value) {
+    if (!value) {
+      return "";
+    }
+    const trimmed = String(value).trim().toLowerCase();
+    if (!trimmed) {
+      return "";
+    }
+    if (trimmed.charAt(0) === "#") {
+      if (trimmed.length === 4) {
+        return "#" + trimmed.charAt(1) + trimmed.charAt(1) + trimmed.charAt(2) + trimmed.charAt(2) + trimmed.charAt(3) + trimmed.charAt(3);
+      }
+      return trimmed;
+    }
+    const match = trimmed.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    if (!match) {
+      return trimmed;
+    }
+    return "#" + [match[1], match[2], match[3]].map(function (channel) {
+      return Number(channel).toString(16).padStart(2, "0");
+    }).join("");
+  }
+
+  function expectedCenterColors(renderOptions) {
+    const colors = {};
+    faceIndex.forEach(function (face, faceOffset) {
+      const centerIndex = faceOffset * 9 + 4;
+      colors[face] = normalizeColor(renderOptions.stickerColors[centerIndex]);
+    });
+    return colors;
+  }
+
+  function extractPolygonFill(polygon) {
+    return normalizeColor(polygon.getAttribute("fill") || window.getComputedStyle(polygon).fill);
+  }
+
   function isCornerIndex(index) {
     const row = Math.floor(index / 3);
     const col = index % 3;
@@ -420,11 +456,12 @@
     return true;
   }
 
-  function buildActualFaceGroups() {
+  function buildVisibleFaceGroups(renderOptions) {
     const svg = previewCube.querySelector("svg");
     if (!svg) {
       return [];
     }
+    const centerColors = expectedCenterColors(renderOptions);
     return Array.from(svg.querySelectorAll("g")).map(function (group, groupIndex) {
       const polygons = Array.from(group.querySelectorAll("polygon"));
       if (polygons.length !== 9) {
@@ -436,83 +473,38 @@
       const average = centers.reduce(function (sum, center) {
         return { x: sum.x + center.x, y: sum.y + center.y };
       }, { x: 0, y: 0 });
+      const centerFill = extractPolygonFill(polygons[4]);
+      const matchedFace = renderOptions.partMask
+        ? null
+        : (Object.keys(centerColors).find(function (face) {
+            return centerColors[face] === centerFill;
+          }) || null);
       return {
         groupIndex: groupIndex,
+        face: matchedFace,
         center: { x: average.x / centers.length, y: average.y / centers.length },
         stickers: centers
       };
     }).filter(Boolean);
   }
 
-  function stickerOffset(index) {
-    const row = Math.floor(index / 3);
-    const col = index % 3;
-    return {
-      col: (col - 1) / 3,
-      row: (row - 1) / 3
-    };
-  }
-
-  function logicalStickerCenter(face, index) {
-    const offset = stickerOffset(index);
-    switch (face) {
-      case "U":
-        return [offset.col, 0.5, offset.row];
-      case "D":
-        return [offset.col, -0.5, -offset.row];
-      case "F":
-        return [offset.col, -offset.row, 0.5];
-      case "B":
-        return [-offset.col, -offset.row, -0.5];
-      case "R":
-        return [0.5, -offset.row, -offset.col];
-      case "L":
-        return [-0.5, -offset.row, offset.col];
-      default:
-        return [0, 0, 0];
-    }
-  }
-
-  function projectSticker(face, index, renderOptions) {
-    const logical = logicalStickerCenter(face, index);
-    const base = [logical[0], -logical[1], -logical[2]];
-    const renderedPoint = transformForRender(base, renderOptions);
-    const projected = projectPoint(renderedPoint, renderOptions);
-    return {
-      face: face,
-      index: index,
-      x: projected.x,
-      y: projected.y
-    };
-  }
-
-  function buildProjectedFaceMap(renderOptions) {
+  function buildVisibleFaces(renderOptions) {
     return faceIndex.map(function (face) {
-      const projectedFace = projectFaceCenter(face, renderOptions);
-      return {
-        face: face,
-        center: { x: projectedFace.x, y: projectedFace.y },
-        visible: projectedFace.visible,
-        stickers: Array.from({ length: 9 }, function (_, index) {
-          return projectSticker(face, index, renderOptions);
-        })
-      };
+      return projectFaceCenter(face, renderOptions);
     }).filter(function (entry) {
       return entry.visible;
     });
   }
 
-  function mapByNearest(sourceEntries, targetEntries, sourcePoint, targetPoint, sourceKey) {
-    const unusedTargets = targetEntries.slice();
+  function mapFacesToGroups(faceEntries, faceGroups) {
+    const unusedGroups = faceGroups.slice();
     const mapping = {};
-    sourceEntries.forEach(function (entry) {
+    faceEntries.forEach(function (entry) {
       let bestIndex = -1;
       let bestDistance = Infinity;
-      const source = sourcePoint(entry);
-      unusedTargets.forEach(function (target, index) {
-        const candidate = targetPoint(target);
-        const dx = candidate.x - source.x;
-        const dy = candidate.y - source.y;
+      unusedGroups.forEach(function (group, index) {
+        const dx = group.center.x - entry.x;
+        const dy = group.center.y - entry.y;
         const distance = dx * dx + dy * dy;
         if (distance < bestDistance) {
           bestDistance = distance;
@@ -520,59 +512,12 @@
         }
       });
       if (bestIndex >= 0) {
-        mapping[sourceKey(entry)] = unusedTargets.splice(bestIndex, 1)[0];
+        mapping[entry.face] = unusedGroups.splice(bestIndex, 1)[0];
       }
     });
     return mapping;
   }
 
-  function buildFaceStickerPoints(renderOptions) {
-    const actualGroups = buildActualFaceGroups();
-    const projectedFaces = buildProjectedFaceMap(renderOptions);
-    const faceToGroup = mapByNearest(
-      projectedFaces,
-      actualGroups,
-      function (entry) {
-        return entry.center;
-      },
-      function (group) {
-        return group.center;
-      },
-      function (entry) {
-        return entry.face;
-      }
-    );
-    const stickerPoints = {};
-    projectedFaces.forEach(function (projectedFace) {
-      const actualGroup = faceToGroup[projectedFace.face];
-      if (!actualGroup) {
-        return;
-      }
-      const pointMap = mapByNearest(
-        projectedFace.stickers,
-        actualGroup.stickers.map(function (point, index) {
-          return { index: index, point: point };
-        }),
-        function (entry) {
-          return entry;
-        },
-        function (entry) {
-          return entry.point;
-        },
-        function (entry) {
-          return entry.index;
-        }
-      );
-      stickerPoints[projectedFace.face] = {};
-      projectedFace.stickers.forEach(function (sticker) {
-        const actualPoint = pointMap[sticker.index];
-        if (actualPoint) {
-          stickerPoints[projectedFace.face][sticker.index] = actualPoint.point;
-        }
-      });
-    });
-    return stickerPoints;
-  }
   function buildStickerState(renderOptions) {
     const numbering = numberingApi();
     if (!numbering) {
@@ -617,14 +562,30 @@
     if (!cubeSvg) {
       return;
     }
-    const stickerPoints = buildFaceStickerPoints(renderOptions);
+    const faceGroups = buildVisibleFaceGroups(renderOptions);
+    const faceToGroup = {};
+    faceGroups.forEach(function (group) {
+      if (group.face) {
+        faceToGroup[group.face] = group;
+      }
+    });
+    const fallbackFaces = buildVisibleFaces(renderOptions).filter(function (face) {
+      return !faceToGroup[face.face];
+    });
+    const fallbackGroups = faceGroups.filter(function (group) {
+      return !group.face;
+    });
+    const fallbackMap = mapFacesToGroups(fallbackFaces, fallbackGroups);
+    Object.keys(fallbackMap).forEach(function (face) {
+      faceToGroup[face] = fallbackMap[face];
+    });
     const labels = buildStickerState(renderOptions).filter(function (entry) {
-      return Boolean(stickerPoints[entry.face] && stickerPoints[entry.face][entry.index]);
+      return Boolean(faceToGroup[entry.face] && faceToGroup[entry.face].stickers[entry.index]);
     });
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "g");
     svg.setAttribute("class", "preview-label-layer");
     labels.forEach(function (entry) {
-      const point = stickerPoints[entry.face][entry.index];
+      const point = faceToGroup[entry.face].stickers[entry.index];
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("class", "preview-label");
       text.setAttribute("x", point.x);
