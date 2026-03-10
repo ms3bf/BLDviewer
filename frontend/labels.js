@@ -422,11 +422,48 @@
     };
   }
 
-  function buildVisibleFaceGroups() {
+  function normalizeColor(value) {
+    if (!value) {
+      return "";
+    }
+    const trimmed = String(value).trim().toLowerCase();
+    if (!trimmed) {
+      return "";
+    }
+    if (trimmed.charAt(0) === "#") {
+      if (trimmed.length === 4) {
+        return "#" + trimmed.charAt(1) + trimmed.charAt(1) + trimmed.charAt(2) + trimmed.charAt(2) + trimmed.charAt(3) + trimmed.charAt(3);
+      }
+      return trimmed;
+    }
+    const match = trimmed.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    if (!match) {
+      return trimmed;
+    }
+    return "#" + [match[1], match[2], match[3]].map(function (channel) {
+      return Number(channel).toString(16).padStart(2, "0");
+    }).join("");
+  }
+
+  function expectedCenterColors(renderOptions) {
+    const colors = {};
+    faceIndex.forEach(function (face, faceOffset) {
+      const centerIndex = faceOffset * 9 + 4;
+      colors[face] = normalizeColor(renderOptions.stickerColors[centerIndex]);
+    });
+    return colors;
+  }
+
+  function extractPolygonFill(polygon) {
+    return normalizeColor(polygon.getAttribute("fill") || window.getComputedStyle(polygon).fill);
+  }
+
+  function buildVisibleFaceGroups(renderOptions) {
     const svg = previewCube.querySelector("svg");
     if (!svg) {
       return [];
     }
+    const centerColors = expectedCenterColors(renderOptions);
     return Array.from(svg.querySelectorAll("g"))
       .map(function (group, groupIndex) {
         const polygons = Array.from(group.querySelectorAll("polygon"));
@@ -442,8 +479,13 @@
             y: sum.y + center.y
           };
         }, { x: 0, y: 0 });
+        const centerFill = extractPolygonFill(polygons[4]);
+        const matchedFace = Object.keys(centerColors).find(function (face) {
+          return centerColors[face] === centerFill;
+        }) || null;
         return {
           groupIndex: groupIndex,
+          face: matchedFace,
           center: {
             x: average.x / centers.length,
             y: average.y / centers.length
@@ -454,36 +496,6 @@
       .filter(function (group) {
         return Boolean(group);
       });
-  }
-
-  function buildVisibleFaces(renderOptions) {
-    return faceIndex.map(function (face) {
-      return projectFaceCenter(face, renderOptions);
-    }).filter(function (entry) {
-      return entry.visible;
-    });
-  }
-
-  function mapFacesToGroups(faceEntries, faceGroups) {
-    const unusedGroups = faceGroups.slice();
-    const mapping = {};
-    faceEntries.forEach(function (entry) {
-      let bestIndex = -1;
-      let bestDistance = Infinity;
-      unusedGroups.forEach(function (group, index) {
-        const dx = group.center.x - entry.x;
-        const dy = group.center.y - entry.y;
-        const distance = dx * dx + dy * dy;
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestIndex = index;
-        }
-      });
-      if (bestIndex >= 0) {
-        mapping[entry.face] = unusedGroups.splice(bestIndex, 1)[0];
-      }
-    });
-    return mapping;
   }
 
   function buildStickerState(renderOptions) {
@@ -509,7 +521,6 @@
       return entry.label;
     });
   }
-
   function clearOverlay() {
     const cubeSvg = previewCube.querySelector("svg");
     if (!cubeSvg) {
@@ -530,9 +541,13 @@
     if (!cubeSvg) {
       return;
     }
-    const faceGroups = buildVisibleFaceGroups();
-    const visibleFaces = buildVisibleFaces(renderOptions);
-    const faceToGroup = mapFacesToGroups(visibleFaces, faceGroups);
+    const faceGroups = buildVisibleFaceGroups(renderOptions);
+    const faceToGroup = {};
+    faceGroups.forEach(function (group) {
+      if (group.face) {
+        faceToGroup[group.face] = group;
+      }
+    });
     const labels = buildStickerState(renderOptions).filter(function (entry) {
       return Boolean(faceToGroup[entry.face] && faceToGroup[entry.face].stickers[entry.index]);
     });
@@ -575,3 +590,6 @@
 
   setToggleText();
 })();
+
+
+
