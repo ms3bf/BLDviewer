@@ -137,6 +137,10 @@ body {
   order: -18;
 }
 
+.priority-mask-help {
+  order: -17;
+}
+
 
 .grid {
   display: grid;
