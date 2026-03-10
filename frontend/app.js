@@ -454,17 +454,6 @@
     return arrows.length ? arrows.join(",") : undefined;
   }
 
-  function faceletColorToken(color) {
-    const normalized = normalizeHex(color || "") || "#000000";
-    return normalized.replace(/^#/, "");
-  }
-
-  function buildFaceletColorParam() {
-    return buildStickerColors().map(function (color) {
-      return faceletColorToken(color);
-    }).join(",");
-  }
-
   function encodeQueryValue(value, preserveCommas) {
     let encoded = encodeURIComponent(value);
     if (preserveCommas) {
@@ -507,10 +496,6 @@
       addParam("fd", fd);
     }
 
-    if (elements.partMask.value.trim()) {
-      addParam("fc", buildFaceletColorParam());
-    }
-
     const arw = buildArrows();
     if (arw) {
       addParam("arw", arw, true);
@@ -549,6 +534,11 @@
       options.maskAlg = elements.stageRotation.value.trim();
     }
 
+    const arrows = buildArrows();
+    if (arrows) {
+      options.arrows = buildPreviewArrows(arrows);
+    }
+
     return options;
   }
 
@@ -565,7 +555,7 @@
     try {
       elements.previewCube.innerHTML = "";
       const renderOptions = buildRenderOptions();
-      visualizer.cubeSVG(elements.previewCube, exportUrl);
+      visualizer.cubeSVG(elements.previewCube, renderOptions);
       window.dispatchEvent(new CustomEvent("bldviewer:rendered", {
         detail: {
           previewCube: elements.previewCube,
@@ -663,10 +653,6 @@
   setCycleStatus("Enter 2 or 3 edge/corner pieces to generate arrows.", false);
   renderPreview();
 })();
-
-
-
-
 
 
 
