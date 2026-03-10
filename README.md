@@ -1,28 +1,29 @@
-# BLDviewer
+﻿# BLDviewer
 
-Minimal frontend-only scaffold for a BLD-focused cube viewer.
+Frontend-only cube viewer for BLD practice.
 
 ## Structure
 
-- `frontend/`: standalone UI inspired by Visualcubeplus, implemented as plain HTML/CSS/JS
-- `server/visualcube/`: copied VisualCube engine files kept separately for reference and derived-logic work
+- `frontend/`: UI (HTML/CSS/JS)
+- `vendor/`: bundled local dependency (`srVisualizer.min.js`)
+- `server/visualcube/`: legacy VisualCube PHP copy kept only as reference (not required to run this app)
 
 ## Local run
 
-No local PHP server is required for the current scaffold.
+No PHP server is required.
 
 - Run `open.bat`
 - Or open `index.html` directly in a browser
 
-The current frontend is static and calls a VisualCube-compatible HTTP endpoint.
-By default it uses:
+The current app renders and downloads cubes locally in the browser.
 
-- `https://cube.rider.biz/visualcube.php`
+## Vercel deploy notes
 
-You can replace the endpoint in the UI later with your own hosted copy.
+- This project is intended to be deployed as static files.
+- `.vercelignore` excludes `server/` so legacy PHP code is not deployed.
+- `vercel.json` adds baseline security headers (CSP, nosniff, referrer policy, permissions policy, frame protection, HSTS).
 
 ## Notes
 
-- Current preview works as a plain frontend by using the endpoint configured in the form.
-- `server/visualcube/` is kept as a local reference/copy for future porting or derived logic work.
+- Numbering and language preferences are stored in browser `localStorage`.
 - `server/visualcube/` contains copied VisualCube-derived code and should remain under LGPL-compatible terms.
