@@ -367,6 +367,61 @@
     elements.cycleStatus.dataset.state = isError ? "error" : "info";
   }
 
+  function parseArrowValue(value) {
+    const match = /^(([URFDLB])(\d+))(([URFDLB])(\d+))(([URFDLB])(\d+))?(-s(\d+))?(-i(\d+))?(-(black|dgrey|grey|silver|white|yellow|red|orange|blue|green|purple|pink|[0-9a-fA-F]{6}|[0-9a-fA-F]{3}))?$/.exec(value);
+    if (!match) {
+      return null;
+    }
+
+    function faceRef(symbol) {
+      return visualizer.Face[symbol];
+    }
+
+    function colorRef(color) {
+      if (!color) {
+        return "grey";
+      }
+      if (/^[0-9a-fA-F]{3,6}$/.test(color)) {
+        return "#" + color;
+      }
+      const named = {
+        black: "#000000",
+        dgrey: "#404040",
+        grey: "#808080",
+        silver: "#bfbfbf",
+        white: "#ffffff",
+        yellow: "#fefe00",
+        red: "#ee0000",
+        orange: "#ffa100",
+        blue: "#0000f2",
+        green: "#00d800",
+        purple: "#a83dd9",
+        pink: "#f33d7b"
+      };
+      return named[color.toLowerCase()] || color;
+    }
+
+    return new visualizer.Arrow(
+      { face: faceRef(match[2]), n: Number(match[3]) },
+      { face: faceRef(match[5]), n: Number(match[6]) },
+      colorRef(match[15]),
+      match[7] ? { face: faceRef(match[8]), n: Number(match[9]) } : undefined,
+      match[11] ? Number(match[11]) : 10,
+      match[13] ? Number(match[13]) : 10
+    );
+  }
+
+  function buildPreviewArrows(arrows) {
+    if (!arrows) {
+      return undefined;
+    }
+    const parsed = arrows.split(",").map(function (value) {
+      return parseArrowValue(value.trim());
+    }).filter(function (value) {
+      return Boolean(value);
+    });
+    return parsed.length ? parsed : undefined;
+  }
   function buildArrows() {
     const arrows = [];
     const manual = elements.arw.value.trim();
@@ -481,7 +536,7 @@
 
     const arrows = buildArrows();
     if (arrows) {
-      options.arrows = arrows;
+      options.arrows = buildPreviewArrows(arrows);
     }
 
     return options;
@@ -598,5 +653,6 @@
   setCycleStatus("Enter 2 or 3 edge/corner pieces to generate arrows.", false);
   renderPreview();
 })();
+
 
 
