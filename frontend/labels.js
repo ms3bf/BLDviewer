@@ -679,6 +679,15 @@
       text.setAttribute("class", "preview-label");
       text.setAttribute("x", point.x);
       text.setAttribute("y", point.y);
+      text.setAttribute("font-family", "Segoe UI, sans-serif");
+      text.setAttribute("font-size", "0.11px");
+      text.setAttribute("font-weight", "700");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("dominant-baseline", "middle");
+      text.setAttribute("fill", "#f6fbff");
+      text.setAttribute("paint-order", "stroke");
+      text.setAttribute("stroke", "rgba(4, 10, 16, 0.82)");
+      text.setAttribute("stroke-width", "0.02px");
       text.textContent = entry.label;
       svg.appendChild(text);
     });
