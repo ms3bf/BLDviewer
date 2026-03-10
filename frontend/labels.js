@@ -597,24 +597,22 @@
       return;
     }
     const faceGroups = buildVisibleFaceGroups(renderOptions);
-    const geometryMap = mapFacesToGroups(buildVisibleFaces(renderOptions), faceGroups);
     const faceToGroup = {};
-    if (renderOptions.partMask) {
-      Object.keys(geometryMap).forEach(function (face) {
-        faceToGroup[face] = geometryMap[face];
-      });
-    } else {
-      faceGroups.forEach(function (group) {
-        if (group.face) {
-          faceToGroup[group.face] = group;
-        }
-      });
-      Object.keys(geometryMap).forEach(function (face) {
-        if (!faceToGroup[face]) {
-          faceToGroup[face] = geometryMap[face];
-        }
-      });
-    }
+    faceGroups.forEach(function (group) {
+      if (group.face) {
+        faceToGroup[group.face] = group;
+      }
+    });
+    const fallbackFaces = buildVisibleFaces(renderOptions).filter(function (face) {
+      return !faceToGroup[face.face];
+    });
+    const fallbackGroups = faceGroups.filter(function (group) {
+      return !group.face;
+    });
+    const fallbackMap = mapFacesToGroups(fallbackFaces, fallbackGroups);
+    Object.keys(fallbackMap).forEach(function (face) {
+      faceToGroup[face] = fallbackMap[face];
+    });
     const labels = buildStickerState(renderOptions).filter(function (entry) {
       return Boolean(faceToGroup[entry.face] && faceToGroup[entry.face].stickers[entry.index]);
     });
@@ -657,7 +655,6 @@
 
   setToggleText();
 })();
-
 
 
 
