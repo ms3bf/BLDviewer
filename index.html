@@ -237,9 +237,44 @@
           </label>
         </section>
       </section>
+    
+      <section class="numbering-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Numbering</p>
+            <h2>Numbering registration</h2>
+          </div>
+          <p class="section-copy">Choose the U and F colors, then assign one character to each sticker on the 3x3 unfolded net.</p>
+        </div>
+
+        <div class="numbering-layout">
+          <div class="numbering-controls">
+            <div class="grid two">
+              <label>
+                U Face Color
+                <select id="numbering-u-color"></select>
+              </label>
+              <label>
+                F Face Color
+                <select id="numbering-f-color"></select>
+              </label>
+            </div>
+
+            <div class="numbering-actions">
+              <button id="numbering-save" class="button primary" type="button">Save Numbering</button>
+              <button id="numbering-reset" class="button ghost" type="button">Reset Letters</button>
+            </div>
+
+            <p id="numbering-status" class="numbering-status"></p>
+          </div>
+
+          <div id="numbering-net" class="numbering-net" aria-label="3x3 unfolded cube net"></div>
+        </div>
+      </section>
     </main>
 
     <script src="./vendor/srVisualizer.min.js"></script>
-    <script src="./frontend/app.js"></script>
+    <script src="./frontend/app.js"></script>`r`n    <script src="./frontend/numbering.js"></script>
   </body>
 </html>
+
