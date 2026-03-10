@@ -1,18 +1,24 @@
 (function () {
   const faces = ["U", "R", "F", "D", "L", "B"];
   const colorOptions = [
-    { code: "y", label: "Yellow", hex: "#fefe00", vector: [0, 1, 0] },
-    { code: "w", label: "White", hex: "#ffffff", vector: [0, -1, 0] },
-    { code: "r", label: "Red", hex: "#ee0000", vector: [1, 0, 0] },
-    { code: "o", label: "Orange", hex: "#ffa100", vector: [-1, 0, 0] },
-    { code: "b", label: "Blue", hex: "#0000f2", vector: [0, 0, 1] },
-    { code: "g", label: "Green", hex: "#00d800", vector: [0, 0, -1] }
+    { code: "y", vector: [0, 1, 0] },
+    { code: "w", vector: [0, -1, 0] },
+    { code: "r", vector: [1, 0, 0] },
+    { code: "o", vector: [-1, 0, 0] },
+    { code: "b", vector: [0, 0, 1] },
+    { code: "g", vector: [0, 0, -1] }
   ];
   const storageKey = "bldviewer-numbering-v1";
   const state = {
     uColor: "y",
     fColor: "b",
-    labels: {}
+    labels: {},
+    statusKey: "",
+    visible: false
+  };
+
+  const i18n = function () {
+    return window.BLDViewerI18n;
   };
 
   const elements = {
@@ -21,8 +27,14 @@
     net: document.querySelector("#numbering-net"),
     status: document.querySelector("#numbering-status"),
     save: document.querySelector("#numbering-save"),
-    reset: document.querySelector("#numbering-reset")
+    reset: document.querySelector("#numbering-reset"),
+    toggle: document.querySelector("#numbering-toggle")
   };
+
+  function t(key, args) {
+    const api = i18n();
+    return api ? api.t(key, args) : key;
+  }
 
   function vectorKey(vector) {
     return vector.join(",");
@@ -48,11 +60,19 @@
     });
   }
 
-  function populateSelect(select) {
+  function optionLabel(code) {
+    return t("color." + code);
+  }
+
+  function renderSelectOptions(select, currentValue) {
+    select.innerHTML = "";
     colorOptions.forEach(function (option) {
       const node = document.createElement("option");
       node.value = option.code;
-      node.textContent = option.label;
+      node.textContent = optionLabel(option.code);
+      if (option.code === currentValue) {
+        node.selected = true;
+      }
       select.appendChild(node);
     });
   }
@@ -120,9 +140,18 @@
     }));
   }
 
-  function saveState(message) {
-    localStorage.setItem(storageKey, JSON.stringify(state));
-    elements.status.textContent = message;
+  function setStatus(key) {
+    state.statusKey = key;
+    elements.status.textContent = key ? t(key) : "";
+  }
+
+  function saveState(messageKey) {
+    localStorage.setItem(storageKey, JSON.stringify({
+      uColor: state.uColor,
+      fColor: state.fColor,
+      labels: state.labels
+    }));
+    setStatus(messageKey);
     emitChange();
     emitSaved();
   }
@@ -197,8 +226,8 @@
 
   function renderNet() {
     const orientation = buildOrientation();
-    elements.uColor.value = state.uColor;
-    elements.fColor.value = state.fColor;
+    renderSelectOptions(elements.uColor, state.uColor);
+    renderSelectOptions(elements.fColor, state.fColor);
     elements.net.innerHTML = "";
 
     ["U", "L", "F", "R", "B", "D"].forEach(function (face) {
@@ -208,7 +237,7 @@
 
       const label = document.createElement("div");
       label.className = "net-face-label";
-      label.textContent = face + " - " + orientation[face].label;
+      label.textContent = face + " - " + optionLabel(orientation[face].code);
       faceCard.appendChild(label);
 
       const grid = document.createElement("div");
@@ -221,6 +250,10 @@
     });
   }
 
+  function updateToggleText() {
+    elements.toggle.textContent = t(state.visible ? "numbering.hide" : "numbering.show");
+  }
+
   const api = {
     getState: function () {
       return apiState();
@@ -229,10 +262,9 @@
 
   window.BLDViewerNumbering = api;
 
-  populateSelect(elements.uColor);
-  populateSelect(elements.fColor);
   const loadedFromStorage = loadState();
   renderNet();
+  updateToggleText();
   emitChange();
   if (loadedFromStorage) {
     emitSaved();
@@ -253,12 +285,28 @@
   });
 
   elements.save.addEventListener("click", function () {
-    saveState("Numbering saved locally.");
+    saveState("numbering.saved");
   });
 
   elements.reset.addEventListener("click", function () {
     state.labels = {};
     renderNet();
-    saveState("Numbering letters reset.");
+    saveState("numbering.resetDone");
   });
+
+  elements.toggle.addEventListener("click", function () {
+    state.visible = !state.visible;
+    updateToggleText();
+    window.dispatchEvent(new CustomEvent("bldviewer:numbering-visibility", {
+      detail: { visible: state.visible }
+    }));
+  });
+
+  if (i18n()) {
+    i18n().subscribe(function () {
+      renderNet();
+      updateToggleText();
+      setStatus(state.statusKey);
+    });
+  }
 })();

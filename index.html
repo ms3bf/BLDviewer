@@ -11,47 +11,75 @@
       <section class="hero">
         <div>
           <p class="eyebrow">BLDviewer</p>
-          <h1>Frontend-only VisualCube viewer</h1>
-          <p class="lede">
-            Local preview is rendered in the browser. The endpoint field is now only for external export URLs.
-          </p>
+          <h1 data-i18n="hero.title">Offline BLD cube viewer</h1>
+          <p class="lede" data-i18n="hero.lede">Preview and download the current cube locally, including numbering overlays.</p>
         </div>
-        <div class="hero-actions">
-          <a id="open-render" class="button primary" target="_blank" rel="noreferrer">Open Export URL</a>
-          <button id="copy-url" class="button ghost" type="button">Copy URL</button>
+        <div class="hero-actions" data-i18n-aria-label="aria.languageButtons" aria-label="Language buttons">
+          <button id="lang-ja" class="button ghost" type="button">&#26085;&#26412;&#35486;</button>
+          <button id="lang-en" class="button ghost" type="button">English</button>
+        </div>
+      </section>
+
+      <section class="numbering-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow" data-i18n="numbering.eyebrow">Numbering</p>
+            <h2 data-i18n="numbering.title">Numbering registration</h2>
+          </div>
+          <p class="section-copy" data-i18n="numbering.copy">Choose the U and F colors, then assign one character to each sticker on the 3x3 unfolded net.</p>
+        </div>
+
+        <div class="numbering-layout">
+          <div class="numbering-controls">
+            <div class="grid two">
+              <label>
+                <span data-i18n="numbering.uColor">U Face Color</span>
+                <select id="numbering-u-color"></select>
+              </label>
+              <label>
+                <span data-i18n="numbering.fColor">F Face Color</span>
+                <select id="numbering-f-color"></select>
+              </label>
+            </div>
+
+            <div class="numbering-actions">
+              <button id="numbering-save" class="button primary" type="button" data-i18n="numbering.save">Save Numbering</button>
+              <button id="numbering-reset" class="button ghost" type="button" data-i18n="numbering.reset">Reset Letters</button>
+              <button id="numbering-toggle" class="button ghost" type="button"></button>
+            </div>
+
+            <p id="numbering-status" class="numbering-status"></p>
+          </div>
+
+          <div id="numbering-net" class="numbering-net" aria-label="3x3 unfolded cube net"></div>
         </div>
       </section>
 
       <section class="workspace">
         <form id="viewer-form" class="controls">
-          <label>
-            Endpoint
-            <input id="endpoint" name="endpoint" type="text" />
-          </label>
-
           <div class="grid two">
             <label>
-              Format
+              <span data-i18n="form.format">Format</span>
               <select id="fmt" name="fmt">
-                <option value="svg">svg</option>
-                <option value="png">png</option>
-                <option value="gif">gif</option>
-                <option value="jpg">jpg</option>
+                <option value="png" data-i18n="format.png">png</option>
+                <option value="svg" data-i18n="format.svg">svg</option>
+                <option value="jpg" data-i18n="format.jpg">jpg</option>
+                <option value="gif" data-i18n="format.gif">gif</option>
               </select>
             </label>
             <label>
-              View
+              <span data-i18n="form.view">View</span>
               <select id="view" name="view">
-                <option value="">normal</option>
-                <option value="plan">plan</option>
-                <option value="trans">trans</option>
+                <option value="" data-i18n="view.normal">normal</option>
+                <option value="plan" data-i18n="view.plan">plan</option>
+                <option value="trans" data-i18n="view.trans">trans</option>
               </select>
             </label>
           </div>
 
           <div class="control-pair">
             <div class="control-head">
-              <span>Puzzle</span>
+              <span data-i18n="form.puzzle">Puzzle</span>
               <output id="pzl-output" for="pzl-range pzl">3</output>
             </div>
             <div class="control-row">
@@ -62,19 +90,19 @@
 
           <div class="control-pair">
             <div class="control-head">
-              <span>Size</span>
-              <output id="size-output" for="size-range size">320</output>
+              <span data-i18n="form.size">Size</span>
+              <output id="size-output" for="size-range size">500</output>
             </div>
             <div class="control-row">
-              <input id="size-range" data-sync="size" type="range" min="64" max="1024" step="1" value="320" />
-              <input id="size" name="size" type="number" min="64" max="1024" step="1" value="320" />
+              <input id="size-range" data-sync="size" type="range" min="64" max="1024" step="1" value="500" />
+              <input id="size" name="size" type="number" min="64" max="1024" step="1" value="500" />
             </div>
           </div>
 
           <div class="grid three">
             <div class="control-pair">
               <div class="control-head">
-                <span>Rotate X</span>
+                <span data-i18n="form.rotateX">Rotate X</span>
                 <output id="rx-output" for="rx-range rx">-34</output>
               </div>
               <div class="control-stack">
@@ -84,7 +112,7 @@
             </div>
             <div class="control-pair">
               <div class="control-head">
-                <span>Rotate Y</span>
+                <span data-i18n="form.rotateY">Rotate Y</span>
                 <output id="ry-output" for="ry-range ry">45</output>
               </div>
               <div class="control-stack">
@@ -94,7 +122,7 @@
             </div>
             <div class="control-pair">
               <div class="control-head">
-                <span>Rotate Z</span>
+                <span data-i18n="form.rotateZ">Rotate Z</span>
                 <output id="rz-output" for="rz-range rz">0</output>
               </div>
               <div class="control-stack">
@@ -106,10 +134,10 @@
 
           <div class="drag-card">
             <div class="control-head">
-              <span>Drag Rotation</span>
+              <span data-i18n="drag.title">Drag Rotation</span>
               <output id="drag-mode-output">XY</output>
             </div>
-            <div class="drag-modes" role="group" aria-label="Drag rotation mode">
+            <div class="drag-modes" role="group" data-i18n-aria-label="aria.dragMode" aria-label="Drag rotation mode">
               <label class="chip">
                 <input type="radio" name="drag-mode" value="xy" checked />
                 <span>XY</span>
@@ -119,24 +147,24 @@
                 <span>Z</span>
               </label>
             </div>
-            <p class="drag-help">Drag the preview to rotate. XY changes X and Y together. Z mode maps horizontal drag to Z.</p>
+            <p class="drag-help" data-i18n="drag.help">Drag the preview to rotate. XY changes X and Y together. Z mode maps horizontal drag to Z.</p>
           </div>
 
           <label>
-            Algorithm
+            <span data-i18n="form.algorithm">Algorithm</span>
             <input id="alg" name="alg" type="text" value="R U R' U'" />
           </label>
 
           <label>
-            Scramble
+            <span data-i18n="form.scramble">Scramble</span>
             <input id="case" name="case" type="text" value="" />
           </label>
 
           <div class="grid two">
             <label hidden>
-              Stage
+              <span data-i18n="form.stage">Stage</span>
               <select id="stage" name="stage">
-                <option value="">none</option>
+                <option value="" data-i18n="common.none">none</option>
                 <option value="oll">oll</option>
                 <option value="ll">ll</option>
                 <option value="f2l">f2l</option>
@@ -144,53 +172,53 @@
               </select>
             </label>
             <label>
-              Part Mask
+              <span data-i18n="form.partMask">Part Mask</span>
               <select id="part-mask" name="partMask">
-                <option value="">none</option>
-                <option value="corner">corner</option>
-                <option value="edge">edge</option>
+                <option value="" data-i18n="common.none">none</option>
+                <option value="corner" data-i18n="mask.corner">corner</option>
+                <option value="edge" data-i18n="mask.edge">edge</option>
               </select>
             </label>
           </div>
 
           <div class="grid two">
             <label hidden>
-              Stage Rotation
+              <span data-i18n="form.stageRotation">Stage Rotation</span>
               <input id="stage-rotation" name="stageRotation" type="text" value="" placeholder="x y y2 z'" />
             </label>
             <div class="mask-help-card">
-              <strong>Mask Guide</strong>
-              <span>`corner` keeps only corner stickers.</span>
-              <span>`edge` keeps only edge stickers.</span>
+              <strong data-i18n="mask.guideTitle">Mask Guide</strong>
+              <span data-i18n="mask.guideCorner">`corner` keeps only corner stickers.</span>
+              <span data-i18n="mask.guideEdge">`edge` keeps only edge stickers.</span>
             </div>
           </div>
 
           <div class="grid two">
             <label>
-              Scheme
+              <span data-i18n="form.scheme">Scheme</span>
               <input id="sch" name="sch" type="text" value="yrbwog" />
             </label>
             <label>
-              Background
+              <span data-i18n="form.background">Background</span>
               <input id="bg" name="bg" type="text" value="ffffff" />
             </label>
           </div>
 
           <div class="grid two">
             <label>
-              Cube Color
+              <span data-i18n="form.cubeColor">Cube Color</span>
               <input id="cc" name="cc" type="text" value="000000" />
             </label>
             <label>
-              Facelet Definition
-              <input id="fd" name="fd" type="text" value="" placeholder="optional; leave empty for solved base" />
+              <span data-i18n="form.faceletDefinition">Facelet Definition</span>
+              <input id="fd" name="fd" type="text" value="" data-i18n-placeholder="form.faceletPlaceholder" placeholder="optional; leave empty for solved base" />
             </label>
           </div>
 
           <div class="grid three">
             <div class="control-pair">
               <div class="control-head">
-                <span>Facelet Opacity</span>
+                <span data-i18n="form.faceletOpacity">Facelet Opacity</span>
                 <output id="fo-output" for="fo-range fo">100</output>
               </div>
               <div class="control-stack">
@@ -200,7 +228,7 @@
             </div>
             <div class="control-pair">
               <div class="control-head">
-                <span>Cube Opacity</span>
+                <span data-i18n="form.cubeOpacity">Cube Opacity</span>
                 <output id="co-output" for="co-range co">100</output>
               </div>
               <div class="control-stack">
@@ -210,7 +238,7 @@
             </div>
             <div class="control-pair">
               <div class="control-head">
-                <span>Distance</span>
+                <span data-i18n="form.distance">Distance</span>
                 <output id="dist-output" for="dist-range dist">5</output>
               </div>
               <div class="control-stack">
@@ -221,72 +249,37 @@
           </div>
 
           <label hidden>
-            Arrows
-            <input id="arw" name="arw" type="text" value="" placeholder="U0U2,R6R2R0-s8-i5-yellow" />
+            <span data-i18n="form.arrows">Arrows</span>
+            <input id="arw" name="arw" type="text" value="" data-i18n-placeholder="form.arrowsPlaceholder" placeholder="U0U2,R6R2R0-s8-i5-yellow" />
           </label>
 
           <div class="cycle-card">
             <div class="control-head">
-              <span>Piece Cycles</span>
+              <span data-i18n="cycle.title">Piece Cycles</span>
             </div>
             <label>
-              Edge 2-cycle / 3-cycle
-              <input id="edge-cycle" name="edgeCycle" type="text" value="" placeholder="UR DF BR" />
+              <span data-i18n="cycle.edge">Edge 2-cycle / 3-cycle</span>
+              <input id="edge-cycle" name="edgeCycle" type="text" value="" data-i18n-placeholder="cycle.edgePlaceholder" placeholder="UR DF BR" />
             </label>
             <label>
-              Corner 2-cycle / 3-cycle
-              <input id="corner-cycle" name="cornerCycle" type="text" value="" placeholder="UBL DBR" />
+              <span data-i18n="cycle.corner">Corner 2-cycle / 3-cycle</span>
+              <input id="corner-cycle" name="cornerCycle" type="text" value="" data-i18n-placeholder="cycle.cornerPlaceholder" placeholder="UBL DBR" />
             </label>
-            <p class="cycle-help">Enter 2 or 3 piece names separated by spaces. For both edges and corners, the first letter of each token is used as the arrow anchor.</p>
+            <p class="cycle-help" data-i18n="cycle.help">Enter 2 or 3 piece names separated by spaces. For both edges and corners, the first letter of each token is used as the arrow anchor.</p>
             <p id="cycle-status" class="cycle-status" data-state="info"></p>
           </div>
         </form>
 
         <section class="preview-panel">
           <div class="preview-frame">
-            <div id="preview-cube" class="preview-cube" aria-label="Cube preview"></div>
+            <div id="preview-cube" class="preview-cube" data-i18n-aria-label="aria.cubePreview" aria-label="Cube preview"></div>
             <p id="preview-status" class="preview-status"></p>
           </div>
-          <label class="url-block">
-            Generated URL
-            <textarea id="generated-url" rows="6" readonly></textarea>
-          </label>
+          <div class="preview-actions">
+            <button id="download-render" class="button primary" type="button" data-i18n="actions.download">Download</button>
+            <p class="download-help" data-i18n="preview.downloadHelp">Downloads the currently visible cube locally, including numbering text.</p>
+          </div>
         </section>
-      </section>
-    
-      <section class="numbering-panel">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Numbering</p>
-            <h2>Numbering registration</h2>
-          </div>
-          <p class="section-copy">Choose the U and F colors, then assign one character to each sticker on the 3x3 unfolded net.</p>
-        </div>
-
-        <div class="numbering-layout">
-          <div class="numbering-controls">
-            <div class="grid two">
-              <label>
-                U Face Color
-                <select id="numbering-u-color"></select>
-              </label>
-              <label>
-                F Face Color
-                <select id="numbering-f-color"></select>
-              </label>
-            </div>
-
-            <div class="numbering-actions">
-              <button id="numbering-save" class="button primary" type="button">Save Numbering</button>
-              <button id="numbering-reset" class="button ghost" type="button">Reset Letters</button>
-              <button id="numbering-toggle" class="button ghost" type="button">Show Numbering</button>
-            </div>
-
-            <p id="numbering-status" class="numbering-status"></p>
-          </div>
-
-          <div id="numbering-net" class="numbering-net" aria-label="3x3 unfolded cube net"></div>
-        </div>
       </section>
     </main>
 
@@ -296,10 +289,3 @@
     <script src="./frontend/labels.js"></script>
   </body>
 </html>
-
-
-
-
-
-
-

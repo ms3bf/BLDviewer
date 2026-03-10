@@ -2,7 +2,6 @@
   const numberingApi = function () {
     return window.BLDViewerNumbering;
   };
-  const toggle = document.querySelector("#numbering-toggle");
   const previewCube = document.querySelector("#preview-cube");
   const state = {
     visible: false,
@@ -57,12 +56,6 @@
   function doubleMap(t, size) {
     return size * size - t + 1;
   }
-
-  const axisFaces = {
-    X: ["U", "B", "F", "D"],
-    Y: ["L", "B", "R", "F"],
-    Z: ["L", "U", "R", "D"]
-  };
 
   const indexTransform = {
     X: {
@@ -227,9 +220,7 @@
         const baseIndex = this.cubeSize * row + (layer + sliceOffset);
         for (let cycleIndex = 0; cycleIndex < faces.length; cycleIndex += 1) {
           const face = faces[cycleIndex];
-          const nextFace = isDouble
-            ? faces[(cycleIndex + 2) % faces.length]
-            : faces[(cycleIndex + 1) % faces.length];
+          const nextFace = isDouble ? faces[(cycleIndex + 2) % faces.length] : faces[(cycleIndex + 1) % faces.length];
           const faceIndexValue = indexTransform[axis][face](baseIndex + 1, this.cubeSize) - 1;
           const nextFaceIndexValue = indexTransform[axis][nextFace](baseIndex + 1, this.cubeSize) - 1;
           this.faces[face][faceIndexValue] = snapshots[isDouble ? (cycleIndex + 2) % snapshots.length : (cycleIndex + 1) % snapshots.length][nextFaceIndexValue];
@@ -241,91 +232,75 @@
   CubeData.prototype.xLayersRotation = function (layer, forward, isDouble, count) {
     this.axisRotation(layer, count || 1, "X", ["U", "F", "D", "B"], forward !== false, Boolean(isDouble));
   };
-
   CubeData.prototype.yLayersRotation = function (layer, forward, isDouble, count) {
     this.axisRotation(layer, count || 1, "Y", ["L", "F", "R", "B"], forward !== false, Boolean(isDouble));
   };
-
   CubeData.prototype.zLayersRotation = function (layer, forward, isDouble, count) {
     this.axisRotation(layer, count || 1, "Z", ["U", "L", "D", "R"], forward !== false, Boolean(isDouble));
   };
-
   CubeData.prototype.safeSlices = function (count) {
     return count > this.cubeSize ? this.cubeSize : count;
   };
-
   CubeData.prototype.rTurn = function (type, count) {
     const slices = count || 1;
     this.rotateFace("R", type);
     this.xLayersRotation(this.cubeSize - slices, type === turnType.Clockwise, type === turnType.Double, slices);
   };
-
   CubeData.prototype.lTurn = function (type, count) {
     const slices = count || 1;
     this.rotateFace("L", type);
     this.xLayersRotation(0, type === turnType.CounterClockwise, type === turnType.Double, slices);
   };
-
   CubeData.prototype.uTurn = function (type, count) {
     const slices = count || 1;
     this.rotateFace("U", type);
     this.yLayersRotation(0, type === turnType.Clockwise, type === turnType.Double, slices);
   };
-
   CubeData.prototype.dTurn = function (type, count) {
     const slices = count || 1;
     this.rotateFace("D", type);
     this.yLayersRotation(this.cubeSize - slices, type === turnType.CounterClockwise, type === turnType.Double, slices);
   };
-
   CubeData.prototype.fTurn = function (type, count) {
     const slices = count || 1;
     this.rotateFace("F", type);
     this.zLayersRotation(this.cubeSize - slices, type === turnType.Clockwise, type === turnType.Double, slices);
   };
-
   CubeData.prototype.bTurn = function (type, count) {
     const slices = count || 1;
     this.rotateFace("B", type);
     this.zLayersRotation(0, type === turnType.CounterClockwise, type === turnType.Double, slices);
   };
-
   CubeData.prototype.mTurn = function (type) {
     if (this.cubeSize >= 2) {
       this.xLayersRotation(1, type === turnType.CounterClockwise, type === turnType.Double, this.cubeSize - 2);
     }
   };
-
   CubeData.prototype.eTurn = function (type) {
     if (this.cubeSize >= 2) {
       this.yLayersRotation(1, type === turnType.CounterClockwise, type === turnType.Double, this.cubeSize - 2);
     }
   };
-
   CubeData.prototype.sTurn = function (type) {
     if (this.cubeSize >= 2) {
       this.zLayersRotation(1, type === turnType.Clockwise, type === turnType.Double, this.cubeSize - 2);
     }
   };
-
   CubeData.prototype.xTurn = function (type) {
     this.rotateFace("R", type);
     this.rotateFace("L", reverseTurnType[type]);
     this.xLayersRotation(0, type === turnType.Clockwise, type === turnType.Double, this.cubeSize);
   };
-
   CubeData.prototype.yTurn = function (type) {
     this.rotateFace("U", type);
     this.rotateFace("D", reverseTurnType[type]);
     this.yLayersRotation(0, type === turnType.Clockwise, type === turnType.Double, this.cubeSize);
   };
-
   CubeData.prototype.zTurn = function (type) {
     this.rotateFace("F", type);
     this.rotateFace("B", reverseTurnType[type]);
     this.zLayersRotation(0, type === turnType.Clockwise, type === turnType.Double, this.cubeSize);
   };
-
   CubeData.prototype.turn = function (unit) {
     if (unit.turnType === turnType.None) {
       return;
@@ -352,7 +327,9 @@
     const radians = Math.PI * degrees / 180;
     const cos = Math.cos(radians);
     const sin = Math.sin(radians);
-    const [x, y, z] = point;
+    const x = point[0];
+    const y = point[1];
+    const z = point[2];
     if (axis === "x") {
       return [x, y * cos - z * sin, y * sin + z * cos];
     }
@@ -363,11 +340,7 @@
   }
 
   function transformForRender(vector, renderOptions) {
-    const axisMap = {
-      0: "x",
-      1: "y",
-      2: "z"
-    };
+    const axisMap = { 0: "x", 1: "y", 2: "z" };
     return renderOptions.viewportRotations.reduce(function (point, rotation) {
       return rotatePoint(point, axisMap[rotation[0]], rotation[1]);
     }, vector);
@@ -489,38 +462,28 @@
       return [];
     }
     const centerColors = expectedCenterColors(renderOptions);
-    return Array.from(svg.querySelectorAll("g"))
-      .map(function (group, groupIndex) {
-        const polygons = Array.from(group.querySelectorAll("polygon"));
-        if (polygons.length !== 9) {
-          return null;
-        }
-        const centers = polygons.map(function (polygon) {
-          return parsePolygonCenter(polygon);
-        });
-        const average = centers.reduce(function (sum, center) {
-          return {
-            x: sum.x + center.x,
-            y: sum.y + center.y
-          };
-        }, { x: 0, y: 0 });
-        const centerFill = extractPolygonFill(polygons[4]);
-        const matchedFace = Object.keys(centerColors).find(function (face) {
-          return centerColors[face] === centerFill;
-        }) || null;
-        return {
-          groupIndex: groupIndex,
-          face: matchedFace,
-          center: {
-            x: average.x / centers.length,
-            y: average.y / centers.length
-          },
-          stickers: centers
-        };
-      })
-      .filter(function (group) {
-        return Boolean(group);
+    return Array.from(svg.querySelectorAll("g")).map(function (group, groupIndex) {
+      const polygons = Array.from(group.querySelectorAll("polygon"));
+      if (polygons.length !== 9) {
+        return null;
+      }
+      const centers = polygons.map(function (polygon) {
+        return parsePolygonCenter(polygon);
       });
+      const average = centers.reduce(function (sum, center) {
+        return { x: sum.x + center.x, y: sum.y + center.y };
+      }, { x: 0, y: 0 });
+      const centerFill = extractPolygonFill(polygons[4]);
+      const matchedFace = Object.keys(centerColors).find(function (face) {
+        return centerColors[face] === centerFill;
+      }) || null;
+      return {
+        groupIndex: groupIndex,
+        face: matchedFace,
+        center: { x: average.x / centers.length, y: average.y / centers.length },
+        stickers: centers
+      };
+    }).filter(Boolean);
   }
 
   function buildVisibleFaces(renderOptions) {
@@ -576,6 +539,7 @@
       return entry.label && shouldShowLabel(entry.index, renderOptions.partMask);
     });
   }
+
   function clearOverlay() {
     const cubeSvg = previewCube.querySelector("svg");
     if (!cubeSvg) {
@@ -630,18 +594,6 @@
     cubeSvg.appendChild(svg);
   }
 
-  function setToggleText() {
-    toggle.textContent = state.visible ? "Hide Numbering" : "Show Numbering";
-  }
-
-  toggle.addEventListener("click", function () {
-    state.visible = !state.visible;
-    setToggleText();
-    if (state.lastRender) {
-      renderOverlay(state.lastRender.renderOptions);
-    }
-  });
-
   window.addEventListener("bldviewer:rendered", function (event) {
     state.lastRender = event.detail;
     renderOverlay(event.detail.renderOptions);
@@ -653,10 +605,10 @@
     }
   });
 
-  setToggleText();
+  window.addEventListener("bldviewer:numbering-visibility", function (event) {
+    state.visible = Boolean(event.detail && event.detail.visible);
+    if (state.lastRender) {
+      renderOverlay(state.lastRender.renderOptions);
+    }
+  });
 })();
-
-
-
-
-
