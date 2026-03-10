@@ -27,10 +27,22 @@
     generatedUrl: document.querySelector("#generated-url"),
     openRender: document.querySelector("#open-render"),
     copyUrl: document.querySelector("#copy-url"),
-    form: document.querySelector("#viewer-form")
+    form: document.querySelector("#viewer-form"),
+    dragModeOutput: document.querySelector("#drag-mode-output")
   };
 
+  const numericControls = ["pzl", "size", "rx", "ry", "rz", "fo", "co", "dist"];
   const defaultEndpoint = "https://cube.rider.biz/visualcube.php";
+  const dragState = {
+    active: false,
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    baseX: 0,
+    baseY: 0,
+    baseZ: 0
+  };
+
   elements.endpoint.value = defaultEndpoint;
 
   function normalizeHex(value) {
@@ -39,6 +51,45 @@
       return undefined;
     }
     return trimmed.startsWith("#") ? trimmed : "#" + trimmed;
+  }
+
+  function clampValue(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function setNumericValue(key, value) {
+    const numberInput = document.querySelector("#" + key);
+    const rangeInput = document.querySelector("#" + key + "-range");
+    const output = document.querySelector("#" + key + "-output");
+    const min = Number(numberInput.min);
+    const max = Number(numberInput.max);
+    const nextValue = String(clampValue(Number(value), min, max));
+    numberInput.value = nextValue;
+    if (rangeInput) {
+      rangeInput.value = nextValue;
+    }
+    if (output) {
+      output.value = nextValue;
+      output.textContent = nextValue;
+    }
+  }
+
+  function syncNumericControls() {
+    numericControls.forEach(function (key) {
+      setNumericValue(key, document.querySelector("#" + key).value);
+      const numberInput = document.querySelector("#" + key);
+      const rangeInput = document.querySelector("#" + key + "-range");
+      if (rangeInput) {
+        rangeInput.addEventListener("input", function () {
+          setNumericValue(key, rangeInput.value);
+          renderPreview();
+        });
+      }
+      numberInput.addEventListener("input", function () {
+        setNumericValue(key, numberInput.value);
+        renderPreview();
+      });
+    });
   }
 
   function buildRotationString() {
@@ -62,22 +113,6 @@
     return rotation ? stage + "-" + rotation : stage;
   }
 
-  function buildColorScheme() {
-    const scheme = elements.sch.value.trim();
-    if (!scheme || scheme.length < 6) {
-      return undefined;
-    }
-    const chars = scheme.split("");
-    return {
-      [visualizer.Face.U]: colorFromScheme(chars[0]),
-      [visualizer.Face.R]: colorFromScheme(chars[1]),
-      [visualizer.Face.F]: colorFromScheme(chars[2]),
-      [visualizer.Face.D]: colorFromScheme(chars[3]),
-      [visualizer.Face.L]: colorFromScheme(chars[4]),
-      [visualizer.Face.B]: colorFromScheme(chars[5])
-    };
-  }
-
   function colorFromScheme(char) {
     const map = {
       n: "#000000",
@@ -95,6 +130,22 @@
       t: "#000000"
     };
     return map[char] || "#000000";
+  }
+
+  function buildColorScheme() {
+    const scheme = elements.sch.value.trim();
+    if (!scheme || scheme.length < 6) {
+      return undefined;
+    }
+    const chars = scheme.split("");
+    return {
+      [visualizer.Face.U]: colorFromScheme(chars[0]),
+      [visualizer.Face.R]: colorFromScheme(chars[1]),
+      [visualizer.Face.F]: colorFromScheme(chars[2]),
+      [visualizer.Face.D]: colorFromScheme(chars[3]),
+      [visualizer.Face.L]: colorFromScheme(chars[4]),
+      [visualizer.Face.B]: colorFromScheme(chars[5])
+    };
   }
 
   function buildFacelets() {
@@ -212,8 +263,60 @@
     }
   }
 
+  function getDragMode() {
+    const selected = document.querySelector('input[name="drag-mode"]:checked');
+    return selected ? selected.value : "xy";
+  }
+
+  function updateDragModeLabel() {
+    elements.dragModeOutput.textContent = getDragMode().toUpperCase();
+  }
+
+  function beginDrag(event) {
+    dragState.active = true;
+    dragState.pointerId = event.pointerId;
+    dragState.startX = event.clientX;
+    dragState.startY = event.clientY;
+    dragState.baseX = Number(elements.rx.value);
+    dragState.baseY = Number(elements.ry.value);
+    dragState.baseZ = Number(elements.rz.value);
+    elements.previewCube.classList.add("is-dragging");
+    elements.previewCube.setPointerCapture(event.pointerId);
+  }
+
+  function moveDrag(event) {
+    if (!dragState.active || event.pointerId !== dragState.pointerId) {
+      return;
+    }
+    const deltaX = event.clientX - dragState.startX;
+    const deltaY = event.clientY - dragState.startY;
+    const sensitivity = 0.7;
+    if (getDragMode() === "z") {
+      setNumericValue("rz", Math.round(dragState.baseZ + deltaX * sensitivity));
+    } else {
+      setNumericValue("ry", Math.round(dragState.baseY + deltaX * sensitivity));
+      setNumericValue("rx", Math.round(dragState.baseX - deltaY * sensitivity));
+    }
+    renderPreview();
+  }
+
+  function endDrag(event) {
+    if (!dragState.active || event.pointerId !== dragState.pointerId) {
+      return;
+    }
+    dragState.active = false;
+    dragState.pointerId = null;
+    elements.previewCube.classList.remove("is-dragging");
+    if (elements.previewCube.hasPointerCapture(event.pointerId)) {
+      elements.previewCube.releasePointerCapture(event.pointerId);
+    }
+  }
+
   elements.form.addEventListener("input", renderPreview);
-  elements.form.addEventListener("change", renderPreview);
+  elements.form.addEventListener("change", function () {
+    updateDragModeLabel();
+    renderPreview();
+  });
   elements.copyUrl.addEventListener("click", function () {
     const text = elements.generatedUrl.value;
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -224,6 +327,12 @@
       elements.copyUrl.textContent = "Copy URL";
     }, 1200);
   });
+  elements.previewCube.addEventListener("pointerdown", beginDrag);
+  elements.previewCube.addEventListener("pointermove", moveDrag);
+  elements.previewCube.addEventListener("pointerup", endDrag);
+  elements.previewCube.addEventListener("pointercancel", endDrag);
 
+  syncNumericControls();
+  updateDragModeLabel();
   renderPreview();
 })();

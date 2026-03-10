@@ -126,6 +126,90 @@ label {
   color: var(--muted);
 }
 
+.control-pair {
+  display: grid;
+  gap: 8px;
+}
+
+.control-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.control-head output {
+  min-width: 2.5rem;
+  text-align: right;
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 88px;
+  gap: 10px;
+  align-items: center;
+}
+
+.control-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.drag-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(155, 44, 31, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 249, 238, 0.72);
+}
+
+.drag-modes {
+  display: flex;
+  gap: 10px;
+}
+
+.chip {
+  position: relative;
+  cursor: pointer;
+}
+
+.chip input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.chip span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.chip input:checked + span {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-strong);
+}
+
+.drag-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 input,
 select,
 textarea {
@@ -136,6 +220,13 @@ textarea {
   font: inherit;
   color: var(--text);
   background: rgba(255, 255, 255, 0.82);
+}
+
+input[type="range"] {
+  padding: 0;
+  border: none;
+  background: transparent;
+  accent-color: var(--accent);
 }
 
 textarea {
@@ -165,11 +256,33 @@ textarea {
   border: 1px solid rgba(155, 44, 31, 0.12);
 }
 
-#preview-image {
-  display: block;
+.preview-cube {
   width: min(100%, 520px);
-  max-height: 520px;
-  object-fit: contain;
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.preview-cube svg,
+.preview-cube img,
+.preview-cube canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.preview-cube.is-dragging {
+  cursor: grabbing;
+}
+
+.preview-status {
+  margin: 12px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .url-block {
@@ -195,24 +308,8 @@ textarea {
   .grid.three {
     grid-template-columns: 1fr;
   }
-}.preview-cube {
-  width: min(100%, 520px);
-  min-height: 320px;
-  display: grid;
-  place-items: center;
-}
 
-.preview-cube svg,
-.preview-cube img,
-.preview-cube canvas {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-.preview-status {
-  margin: 12px 0 0;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.9rem;
+  .control-row {
+    grid-template-columns: 1fr;
+  }
 }

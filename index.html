@@ -40,24 +40,6 @@
               </select>
             </label>
             <label>
-              Puzzle
-              <select id="pzl" name="pzl">
-                <option>2</option>
-                <option selected>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="grid two">
-            <label>
-              Size
-              <input id="size" name="size" type="number" min="64" max="1024" step="1" value="320" />
-            </label>
-            <label>
               View
               <select id="view" name="view">
                 <option value="">normal</option>
@@ -67,19 +49,77 @@
             </label>
           </div>
 
+          <div class="control-pair">
+            <div class="control-head">
+              <span>Puzzle</span>
+              <output id="pzl-output" for="pzl-range pzl">3</output>
+            </div>
+            <div class="control-row">
+              <input id="pzl-range" data-sync="pzl" type="range" min="2" max="7" step="1" value="3" />
+              <input id="pzl" name="pzl" type="number" min="2" max="7" step="1" value="3" />
+            </div>
+          </div>
+
+          <div class="control-pair">
+            <div class="control-head">
+              <span>Size</span>
+              <output id="size-output" for="size-range size">320</output>
+            </div>
+            <div class="control-row">
+              <input id="size-range" data-sync="size" type="range" min="64" max="1024" step="1" value="320" />
+              <input id="size" name="size" type="number" min="64" max="1024" step="1" value="320" />
+            </div>
+          </div>
+
           <div class="grid three">
-            <label>
-              Rotate X
-              <input id="rx" name="rx" type="number" min="-180" max="180" step="1" value="-34" />
-            </label>
-            <label>
-              Rotate Y
-              <input id="ry" name="ry" type="number" min="-180" max="180" step="1" value="45" />
-            </label>
-            <label>
-              Rotate Z
-              <input id="rz" name="rz" type="number" min="-180" max="180" step="1" value="0" />
-            </label>
+            <div class="control-pair">
+              <div class="control-head">
+                <span>Rotate X</span>
+                <output id="rx-output" for="rx-range rx">-34</output>
+              </div>
+              <div class="control-stack">
+                <input id="rx-range" data-sync="rx" type="range" min="-180" max="180" step="1" value="-34" />
+                <input id="rx" name="rx" type="number" min="-180" max="180" step="1" value="-34" />
+              </div>
+            </div>
+            <div class="control-pair">
+              <div class="control-head">
+                <span>Rotate Y</span>
+                <output id="ry-output" for="ry-range ry">45</output>
+              </div>
+              <div class="control-stack">
+                <input id="ry-range" data-sync="ry" type="range" min="-180" max="180" step="1" value="45" />
+                <input id="ry" name="ry" type="number" min="-180" max="180" step="1" value="45" />
+              </div>
+            </div>
+            <div class="control-pair">
+              <div class="control-head">
+                <span>Rotate Z</span>
+                <output id="rz-output" for="rz-range rz">0</output>
+              </div>
+              <div class="control-stack">
+                <input id="rz-range" data-sync="rz" type="range" min="-180" max="180" step="1" value="0" />
+                <input id="rz" name="rz" type="number" min="-180" max="180" step="1" value="0" />
+              </div>
+            </div>
+          </div>
+
+          <div class="drag-card">
+            <div class="control-head">
+              <span>Drag Rotation</span>
+              <output id="drag-mode-output">XY</output>
+            </div>
+            <div class="drag-modes" role="group" aria-label="Drag rotation mode">
+              <label class="chip">
+                <input type="radio" name="drag-mode" value="xy" checked />
+                <span>XY</span>
+              </label>
+              <label class="chip">
+                <input type="radio" name="drag-mode" value="z" />
+                <span>Z</span>
+              </label>
+            </div>
+            <p class="drag-help">Drag the preview to rotate. XY changes X and Y together. Z mode maps horizontal drag to Z.</p>
           </div>
 
           <label>
@@ -132,18 +172,36 @@
           </div>
 
           <div class="grid three">
-            <label>
-              Facelet Opacity
-              <input id="fo" name="fo" type="number" min="0" max="100" step="1" value="100" />
-            </label>
-            <label>
-              Cube Opacity
-              <input id="co" name="co" type="number" min="0" max="100" step="1" value="100" />
-            </label>
-            <label>
-              Distance
-              <input id="dist" name="dist" type="number" min="1" max="100" step="1" value="5" />
-            </label>
+            <div class="control-pair">
+              <div class="control-head">
+                <span>Facelet Opacity</span>
+                <output id="fo-output" for="fo-range fo">100</output>
+              </div>
+              <div class="control-stack">
+                <input id="fo-range" data-sync="fo" type="range" min="0" max="100" step="1" value="100" />
+                <input id="fo" name="fo" type="number" min="0" max="100" step="1" value="100" />
+              </div>
+            </div>
+            <div class="control-pair">
+              <div class="control-head">
+                <span>Cube Opacity</span>
+                <output id="co-output" for="co-range co">100</output>
+              </div>
+              <div class="control-stack">
+                <input id="co-range" data-sync="co" type="range" min="0" max="100" step="1" value="100" />
+                <input id="co" name="co" type="number" min="0" max="100" step="1" value="100" />
+              </div>
+            </div>
+            <div class="control-pair">
+              <div class="control-head">
+                <span>Distance</span>
+                <output id="dist-output" for="dist-range dist">5</output>
+              </div>
+              <div class="control-stack">
+                <input id="dist-range" data-sync="dist" type="range" min="1" max="100" step="1" value="5" />
+                <input id="dist" name="dist" type="number" min="1" max="100" step="1" value="5" />
+              </div>
+            </div>
           </div>
 
           <label>
