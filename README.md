@@ -1,6 +1,12 @@
-﻿# BLDviewer
+# BLDviewer
 
 Frontend-only cube viewer for BLD practice.
+
+## Live Site
+
+This app is publicly available at:
+
+- https://bl-dviewer.vercel.app/
 
 ## Structure
 
