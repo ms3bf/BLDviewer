@@ -186,6 +186,16 @@
     }, vector);
   }
 
+  function projectPoint(point, renderOptions) {
+    const dist = renderOptions.dist;
+    const translated = [point[0], point[1], point[2] + dist];
+    return {
+      x: translated[0] * dist / translated[2],
+      y: translated[1] * dist / translated[2],
+      z: translated[2]
+    };
+  }
+
   function projectSticker(sticker, renderOptions) {
     const center = [
       (sticker.pos[0] + sticker.normal[0] * 0.5) / 3,
@@ -198,13 +208,91 @@
       -sticker.normal[1],
       -sticker.normal[2]
     ], renderOptions);
-    const dist = renderOptions.dist;
-    const translated = [renderedCenter[0], renderedCenter[1], renderedCenter[2] + dist];
+    const point = projectPoint(renderedCenter, renderOptions);
     return {
-      x: translated[0] * dist / translated[2],
-      y: translated[1] * dist / translated[2],
+      x: point.x,
+      y: point.y,
       visible: renderNormal[2] < 0
     };
+  }
+
+  function parsePolygonCenter(polygon) {
+    const points = (polygon.getAttribute("points") || "").trim().split(/\s+/).map(function (pair) {
+      return pair.split(",").map(Number);
+    }).filter(function (pair) {
+      return pair.length === 2 && Number.isFinite(pair[0]) && Number.isFinite(pair[1]);
+    });
+    if (!points.length) {
+      return { x: 0, y: 0 };
+    }
+    const total = points.reduce(function (sum, pair) {
+      return { x: sum.x + pair[0], y: sum.y + pair[1] };
+    }, { x: 0, y: 0 });
+    return {
+      x: total.x / points.length,
+      y: total.y / points.length
+    };
+  }
+
+  function buildFaceLayout(renderOptions) {
+    const svg = previewCube.querySelector("svg");
+    if (!svg) {
+      return null;
+    }
+    const groups = Array.from(svg.querySelectorAll("g")).map(function (group) {
+      return {
+        element: group,
+        polygons: Array.from(group.querySelectorAll("polygon"))
+      };
+    }).filter(function (group) {
+      return group.polygons.length === 9;
+    });
+
+    if (!groups.length) {
+      return null;
+    }
+
+    const faceCenters = faceIndex.map(function (face) {
+      const centerSticker = makeSticker(face, 1, 1);
+      const projected = projectSticker(centerSticker, renderOptions);
+      return {
+        face: face,
+        x: projected.x,
+        y: projected.y,
+        visible: projected.visible
+      };
+    });
+
+    const layouts = {};
+    const remainingFaces = faceCenters.filter(function (face) { return face.visible; }).concat(faceCenters.filter(function (face) { return !face.visible; }));
+
+    groups.forEach(function (group) {
+      const polygonCenters = group.polygons.map(parsePolygonCenter);
+      const groupCenter = polygonCenters.reduce(function (sum, point) {
+        return { x: sum.x + point.x, y: sum.y + point.y };
+      }, { x: 0, y: 0 });
+      groupCenter.x /= polygonCenters.length;
+      groupCenter.y /= polygonCenters.length;
+
+      let bestIndex = -1;
+      let bestDistance = Infinity;
+      remainingFaces.forEach(function (candidate, index) {
+        const dx = candidate.x - groupCenter.x;
+        const dy = candidate.y - groupCenter.y;
+        const distance = dx * dx + dy * dy;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+
+      if (bestIndex >= 0) {
+        const matchedFace = remainingFaces.splice(bestIndex, 1)[0];
+        layouts[matchedFace.face] = polygonCenters;
+      }
+    });
+
+    return layouts;
   }
 
   function buildLabelData(renderOptions) {
@@ -219,15 +307,14 @@
     applySequence(stickers, sequence, isCase);
     return stickers.map(function (sticker) {
       const placement = rowColFromSticker(sticker);
-      const point = projectSticker(sticker, renderOptions);
       return {
         face: placement.face,
         index: placement.row * 3 + placement.col,
         label: saved.labels[sticker.key] || "",
-        point: point
+        fallback: projectSticker(sticker, renderOptions)
       };
     }).filter(function (entry) {
-      return entry.label && entry.point.visible;
+      return entry.label;
     });
   }
 
@@ -244,14 +331,23 @@
       return;
     }
     const labels = buildLabelData(renderOptions);
+    const faceLayout = buildFaceLayout(renderOptions) || {};
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("class", "preview-label-layer");
     svg.setAttribute("viewBox", "-0.9 -0.9 1.8 1.8");
     labels.forEach(function (entry) {
+      const point = faceLayout[entry.face] && faceLayout[entry.face][entry.index] ? {
+        x: faceLayout[entry.face][entry.index].x,
+        y: faceLayout[entry.face][entry.index].y,
+        visible: true
+      } : entry.fallback;
+      if (!point.visible) {
+        return;
+      }
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("class", "preview-label");
-      text.setAttribute("x", entry.point.x);
-      text.setAttribute("y", entry.point.y);
+      text.setAttribute("x", point.x);
+      text.setAttribute("y", point.y);
       text.textContent = entry.label;
       svg.appendChild(text);
     });
