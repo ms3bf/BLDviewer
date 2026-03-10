@@ -11,7 +11,7 @@
       <section class="hero">
         <div>
           <p class="eyebrow">BLDviewer</p>
-          <h1 data-i18n="hero.title">Offline BLD cube viewer</h1>
+          <h1 data-i18n="hero.title">Visual Cube for BLDer</h1>
           <p class="lede" data-i18n="hero.lede">Preview and download the current cube locally, including numbering overlays.</p>
         </div>
         <div class="hero-actions" data-i18n-aria-label="aria.languageButtons" aria-label="Language buttons">
@@ -156,12 +156,12 @@
             <p class="drag-help" data-i18n="drag.help">Drag the preview to rotate. XY changes X and Y together. Z mode maps horizontal drag to Z.</p>
           </div>
 
-          <label>
+          <label class="priority-algorithm">
             <span data-i18n="form.algorithm">Algorithm</span>
             <input id="alg" name="alg" type="text" value="R U R' U'" />
           </label>
 
-          <label>
+          <label class="priority-scramble">
             <span data-i18n="form.scramble">Scramble</span>
             <input id="case" name="case" type="text" value="" />
           </label>
@@ -177,7 +177,7 @@
                 <option value="cross">cross</option>
               </select>
             </label>
-            <label>
+            <label class="priority-mask">
               <span data-i18n="form.partMask">Part Mask</span>
               <select id="part-mask" name="partMask">
                 <option value="" data-i18n="common.none">none</option>
@@ -259,9 +259,9 @@
             <input id="arw" name="arw" type="text" value="" data-i18n-placeholder="form.arrowsPlaceholder" placeholder="U0U2,R6R2R0-s8-i5-yellow" />
           </label>
 
-          <div class="cycle-card">
+          <div class="cycle-card priority-cycle">
             <div class="control-head">
-              <span data-i18n="cycle.title">Piece Cycles</span>
+              <span data-i18n="cycle.title">Piece Swaps</span>
             </div>
             <label>
               <span data-i18n="cycle.edge">Edge 2-cycle / 3-cycle</span>
@@ -271,8 +271,7 @@
               <span data-i18n="cycle.corner">Corner 2-cycle / 3-cycle</span>
               <input id="corner-cycle" name="cornerCycle" type="text" value="" data-i18n-placeholder="cycle.cornerPlaceholder" placeholder="UBL DBR" />
             </label>
-            <p class="cycle-help" data-i18n="cycle.help">Enter 2 or 3 piece names separated by spaces. For both edges and corners, the first letter of each token is used as the arrow anchor.</p>
-            <p id="cycle-status" class="cycle-status" data-state="info"></p>
+<p id="cycle-status" class="cycle-status" data-state="info"></p>
           </div>
         </form>
 

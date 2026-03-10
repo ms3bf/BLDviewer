@@ -3,7 +3,7 @@
   const languageStorageKey = "bldviewer-language-v1";
   const translations = {
     ja: {
-      "hero.title": "\u30aa\u30d5\u30e9\u30a4\u30f3 BLD \u30ad\u30e5\u30fc\u30d6\u30d3\u30e5\u30fc\u30a2",
+      "hero.title": "Visual Cube for BLDer",
       "hero.lede": "\u30ca\u30f3\u30d0\u30ea\u30f3\u30b0\u8868\u793a\u3092\u542b\u3080\u73fe\u5728\u306e\u30ad\u30e5\u30fc\u30d6\u3092\u3001\u30d6\u30e9\u30a6\u30b6\u5185\u3067\u78ba\u8a8d\u3057\u3066\u305d\u306e\u307e\u307e\u30ed\u30fc\u30ab\u30eb\u4fdd\u5b58\u3067\u304d\u307e\u3059\u3002",
       "numbering.eyebrow": "\u30ca\u30f3\u30d0\u30ea\u30f3\u30b0",
       "numbering.title": "\u30ca\u30f3\u30d0\u30ea\u30f3\u30b0\u767b\u9332",
@@ -49,12 +49,12 @@
       "mask.guideEdge": "`edge` \u306f\u30a8\u30c3\u30b8\u30b9\u30c6\u30c3\u30ab\u30fc\u3060\u3051\u3092\u6b8b\u3057\u307e\u3059\u3002",
       "mask.corner": "corner",
       "mask.edge": "edge",
-      "cycle.title": "\u30d1\u30fc\u30c4\u30b5\u30a4\u30af\u30eb",
+      "cycle.title": "\u30d1\u30fc\u30c4\u306e\u4ea4\u63db",
       "cycle.edge": "\u30a8\u30c3\u30b8 2-cycle / 3-cycle",
       "cycle.corner": "\u30b3\u30fc\u30ca\u30fc 2-cycle / 3-cycle",
       "cycle.edgePlaceholder": "UR DF BR",
       "cycle.cornerPlaceholder": "UBL DBR",
-      "cycle.help": "2\u500b\u307e\u305f\u306f3\u500b\u306e\u30d1\u30fc\u30c4\u540d\u3092\u7a7a\u767d\u533a\u5207\u308a\u3067\u5165\u529b\u3057\u307e\u3059\u3002\u30a8\u30c3\u30b8\u3082\u30b3\u30fc\u30ca\u30fc\u3082\u3001\u5404\u30c8\u30fc\u30af\u30f3\u306e\u5148\u982d\u6587\u5b57\u5074\u3092\u77e2\u5370\u306e\u30a2\u30f3\u30ab\u30fc\u3068\u3057\u3066\u4f7f\u3044\u307e\u3059\u3002",
+      
       "cycle.idle": "2\u500b\u307e\u305f\u306f3\u500b\u306e edge / corner \u30d1\u30fc\u30c4\u3092\u5165\u529b\u3059\u308b\u3068\u77e2\u5370\u3092\u751f\u6210\u3057\u307e\u3059\u3002",
       "cycle.converted": "\u30d1\u30fc\u30c4\u8a18\u6cd5\u3092 VisualCube \u77e2\u5370\u3078\u5909\u63db\u3057\u307e\u3057\u305f\u3002",
       "cycle.edgeError": "Edge cycle: {message}",
@@ -93,7 +93,7 @@
       "color.b": "\u9752",
       "color.g": "\u7dd1"
     },    en: {
-      "hero.title": "Offline BLD cube viewer",
+      "hero.title": "Visual Cube for BLDer",
       "hero.lede": "Preview and download the current cube locally, including numbering overlays.",
       "numbering.eyebrow": "Numbering",
       "numbering.title": "Numbering registration",
@@ -139,12 +139,12 @@
       "mask.guideEdge": "`edge` keeps only edge stickers.",
       "mask.corner": "corner",
       "mask.edge": "edge",
-      "cycle.title": "Piece Cycles",
+      "cycle.title": "Piece Swaps",
       "cycle.edge": "Edge 2-cycle / 3-cycle",
       "cycle.corner": "Corner 2-cycle / 3-cycle",
       "cycle.edgePlaceholder": "UR DF BR",
       "cycle.cornerPlaceholder": "UBL DBR",
-      "cycle.help": "Enter 2 or 3 piece names separated by spaces. For both edges and corners, the first letter of each token is used as the arrow anchor.",
+      
       "cycle.idle": "Enter 2 or 3 edge / corner pieces to generate arrows.",
       "cycle.converted": "Piece notation converted to VisualCube arrows.",
       "cycle.edgeError": "Edge cycle: {message}",

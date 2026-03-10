@@ -121,6 +121,23 @@ body {
   gap: 14px;
 }
 
+.priority-cycle {
+  order: -30;
+}
+
+.priority-scramble {
+  order: -20;
+}
+
+.priority-algorithm {
+  order: -15;
+}
+
+.priority-mask {
+  order: -10;
+}
+
+
 .grid {
   display: grid;
   gap: 14px;
