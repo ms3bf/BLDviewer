@@ -1,12 +1,12 @@
 (function () {
   const faces = ["U", "R", "F", "D", "L", "B"];
   const colorOptions = [
-    { code: "y", vector: [0, 1, 0] },
-    { code: "w", vector: [0, -1, 0] },
-    { code: "r", vector: [1, 0, 0] },
-    { code: "o", vector: [-1, 0, 0] },
-    { code: "b", vector: [0, 0, 1] },
-    { code: "g", vector: [0, 0, -1] }
+    { code: "y", vector: [0, 1, 0], hex: "#fefe00" },
+    { code: "w", vector: [0, -1, 0], hex: "#ffffff" },
+    { code: "r", vector: [1, 0, 0], hex: "#ee0000" },
+    { code: "o", vector: [-1, 0, 0], hex: "#ffa100" },
+    { code: "b", vector: [0, 0, 1], hex: "#0000f2" },
+    { code: "g", vector: [0, 0, -1], hex: "#00d800" }
   ];
   const storageKey = "bldviewer-numbering-v1";
   const state = {
