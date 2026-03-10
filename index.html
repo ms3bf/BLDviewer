@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BLDviewer</title>
+    <link rel="stylesheet" href="./frontend/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">BLDviewer</p>
+          <h1>Frontend-only VisualCube viewer</h1>
+          <p class="lede">
+            Local preview is rendered in the browser. The endpoint field is now only for external export URLs.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <a id="open-render" class="button primary" target="_blank" rel="noreferrer">Open Export URL</a>
+          <button id="copy-url" class="button ghost" type="button">Copy URL</button>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <form id="viewer-form" class="controls">
+          <label>
+            Endpoint
+            <input id="endpoint" name="endpoint" type="text" />
+          </label>
+
+          <div class="grid two">
+            <label>
+              Format
+              <select id="fmt" name="fmt">
+                <option value="svg">svg</option>
+                <option value="png">png</option>
+                <option value="gif">gif</option>
+                <option value="jpg">jpg</option>
+              </select>
+            </label>
+            <label>
+              Puzzle
+              <select id="pzl" name="pzl">
+                <option>2</option>
+                <option selected>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              Size
+              <input id="size" name="size" type="number" min="64" max="1024" step="1" value="320" />
+            </label>
+            <label>
+              View
+              <select id="view" name="view">
+                <option value="">normal</option>
+                <option value="plan">plan</option>
+                <option value="trans">trans</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="grid three">
+            <label>
+              Rotate X
+              <input id="rx" name="rx" type="number" min="-180" max="180" step="1" value="-34" />
+            </label>
+            <label>
+              Rotate Y
+              <input id="ry" name="ry" type="number" min="-180" max="180" step="1" value="45" />
+            </label>
+            <label>
+              Rotate Z
+              <input id="rz" name="rz" type="number" min="-180" max="180" step="1" value="0" />
+            </label>
+          </div>
+
+          <label>
+            Algorithm
+            <input id="alg" name="alg" type="text" value="R U R' U'" />
+          </label>
+
+          <label>
+            Case
+            <input id="case" name="case" type="text" value="" />
+          </label>
+
+          <div class="grid two">
+            <label>
+              Stage
+              <select id="stage" name="stage">
+                <option value="">none</option>
+                <option value="oll">oll</option>
+                <option value="ll">ll</option>
+                <option value="f2l">f2l</option>
+                <option value="cross">cross</option>
+              </select>
+            </label>
+            <label>
+              Stage Rotation
+              <input id="stage-rotation" name="stageRotation" type="text" value="" placeholder="x y y2 z'" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              Scheme
+              <input id="sch" name="sch" type="text" value="yrbwog" />
+            </label>
+            <label>
+              Background
+              <input id="bg" name="bg" type="text" value="ffffff" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              Cube Color
+              <input id="cc" name="cc" type="text" value="000000" />
+            </label>
+            <label>
+              Facelet Definition
+              <input id="fd" name="fd" type="text" value="" placeholder="optional; leave empty for solved base" />
+            </label>
+          </div>
+
+          <div class="grid three">
+            <label>
+              Facelet Opacity
+              <input id="fo" name="fo" type="number" min="0" max="100" step="1" value="100" />
+            </label>
+            <label>
+              Cube Opacity
+              <input id="co" name="co" type="number" min="0" max="100" step="1" value="100" />
+            </label>
+            <label>
+              Distance
+              <input id="dist" name="dist" type="number" min="1" max="100" step="1" value="5" />
+            </label>
+          </div>
+
+          <label>
+            Arrows
+            <input id="arw" name="arw" type="text" value="" placeholder="U0U2,R6R2R0-s8-i5-yellow" />
+          </label>
+        </form>
+
+        <section class="preview-panel">
+          <div class="preview-frame">
+            <div id="preview-cube" class="preview-cube" aria-label="Cube preview"></div>
+            <p id="preview-status" class="preview-status"></p>
+          </div>
+          <label class="url-block">
+            Generated URL
+            <textarea id="generated-url" rows="6" readonly></textarea>
+          </label>
+        </section>
+      </section>
+    </main>
+
+    <script src="./vendor/srVisualizer.min.js"></script>
+    <script src="./frontend/app.js"></script>
+  </body>
+</html>
