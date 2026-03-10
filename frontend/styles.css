@@ -481,3 +481,25 @@ textarea {
     grid-column: auto;
   }
 }
+
+.preview-cube {
+  position: relative;
+}
+
+.preview-label-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.preview-label {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 0.085px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: #1a1713;
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 0.02px;
+}

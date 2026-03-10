@@ -306,7 +306,14 @@
 
     try {
       elements.previewCube.innerHTML = "";
-      visualizer.cubeSVG(elements.previewCube, buildRenderOptions());
+      const renderOptions = buildRenderOptions();
+      visualizer.cubeSVG(elements.previewCube, renderOptions);
+      window.dispatchEvent(new CustomEvent("bldviewer:rendered", {
+        detail: {
+          previewCube: elements.previewCube,
+          renderOptions: renderOptions
+        }
+      }));
       if (elements.partMask.value) {
         elements.previewStatus.textContent = "Local preview rendered with custom part masking in the frontend. Export URL does not include that custom mask yet.";
       } else {

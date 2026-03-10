@@ -8,14 +8,6 @@
     { code: "b", label: "Blue", hex: "#0000f2", vector: [0, 0, 1] },
     { code: "g", label: "Green", hex: "#00d800", vector: [0, 0, -1] }
   ];
-  const faceVectors = {
-    U: [0, 1, 0],
-    R: [1, 0, 0],
-    F: [0, 0, 1],
-    D: [0, -1, 0],
-    L: [-1, 0, 0],
-    B: [0, 0, -1]
-  };
   const storageKey = "bldviewer-numbering-v1";
   const state = {
     uColor: "y",
@@ -78,9 +70,16 @@
     }
   }
 
+  function emitChange() {
+    window.dispatchEvent(new CustomEvent("bldviewer:numbering-changed", {
+      detail: api.getState()
+    }));
+  }
+
   function saveState(message) {
     localStorage.setItem(storageKey, JSON.stringify(state));
     elements.status.textContent = message;
+    emitChange();
   }
 
   function sanitizeCharacter(value) {
@@ -148,6 +147,7 @@
       const nextValue = sanitizeCharacter(input.value);
       input.value = nextValue;
       state.labels[faceKey(face, index)] = nextValue;
+      emitChange();
     });
     input.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
@@ -155,6 +155,7 @@
         const nextValue = sanitizeCharacter(input.value);
         input.value = nextValue;
         state.labels[faceKey(face, index)] = nextValue;
+        emitChange();
       }
     });
     input.addEventListener("input", function () {
@@ -162,6 +163,7 @@
       if (input.value !== state.labels[faceKey(face, index)]) {
         input.value = state.labels[faceKey(face, index)];
       }
+      emitChange();
     });
     sticker.appendChild(input);
     return sticker;
@@ -193,21 +195,37 @@
     });
   }
 
+  const api = {
+    getState: function () {
+      return {
+        uColor: state.uColor,
+        fColor: state.fColor,
+        labels: Object.assign({}, state.labels),
+        orientation: buildOrientation()
+      };
+    }
+  };
+
+  window.BLDViewerNumbering = api;
+
   populateSelect(elements.uColor);
   populateSelect(elements.fColor);
   loadState();
   renderNet();
+  emitChange();
 
   elements.uColor.addEventListener("change", function () {
     state.uColor = elements.uColor.value;
     ensureValidOrientation();
     renderNet();
+    emitChange();
   });
 
   elements.fColor.addEventListener("change", function () {
     state.fColor = elements.fColor.value;
     ensureValidOrientation();
     renderNet();
+    emitChange();
   });
 
   elements.save.addEventListener("click", function () {
