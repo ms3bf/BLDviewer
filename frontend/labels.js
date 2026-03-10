@@ -234,65 +234,22 @@
     };
   }
 
-  function buildFaceLayout(renderOptions) {
+  function buildVisibleStickerCenters() {
     const svg = previewCube.querySelector("svg");
     if (!svg) {
-      return null;
+      return [];
     }
-    const groups = Array.from(svg.querySelectorAll("g")).map(function (group) {
-      return {
-        element: group,
-        polygons: Array.from(group.querySelectorAll("polygon"))
-      };
-    }).filter(function (group) {
-      return group.polygons.length === 9;
-    });
-
-    if (!groups.length) {
-      return null;
-    }
-
-    const faceCenters = faceIndex.map(function (face) {
-      const centerSticker = makeSticker(face, 1, 1);
-      const projected = projectSticker(centerSticker, renderOptions);
-      return {
-        face: face,
-        x: projected.x,
-        y: projected.y,
-        visible: projected.visible
-      };
-    });
-
-    const layouts = {};
-    const remainingFaces = faceCenters.filter(function (face) { return face.visible; }).concat(faceCenters.filter(function (face) { return !face.visible; }));
-
-    groups.forEach(function (group) {
-      const polygonCenters = group.polygons.map(parsePolygonCenter);
-      const groupCenter = polygonCenters.reduce(function (sum, point) {
-        return { x: sum.x + point.x, y: sum.y + point.y };
-      }, { x: 0, y: 0 });
-      groupCenter.x /= polygonCenters.length;
-      groupCenter.y /= polygonCenters.length;
-
-      let bestIndex = -1;
-      let bestDistance = Infinity;
-      remainingFaces.forEach(function (candidate, index) {
-        const dx = candidate.x - groupCenter.x;
-        const dy = candidate.y - groupCenter.y;
-        const distance = dx * dx + dy * dy;
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestIndex = index;
-        }
+    return Array.from(svg.querySelectorAll("g"))
+      .map(function (group) {
+        return Array.from(group.querySelectorAll("polygon"));
+      })
+      .filter(function (polygons) {
+        return polygons.length === 9;
+      })
+      .flat()
+      .map(function (polygon) {
+        return parsePolygonCenter(polygon);
       });
-
-      if (bestIndex >= 0) {
-        const matchedFace = remainingFaces.splice(bestIndex, 1)[0];
-        layouts[matchedFace.face] = polygonCenters;
-      }
-    });
-
-    return layouts;
   }
 
   function buildLabelData(renderOptions) {
@@ -338,18 +295,34 @@
     if (!cubeSvg) {
       return;
     }
-    const labels = buildLabelData(renderOptions);
-    const faceLayout = buildFaceLayout(renderOptions) || {};
+    const labels = buildLabelData(renderOptions).filter(function (entry) {
+      return entry.fallback.visible;
+    });
+    const availableCenters = buildVisibleStickerCenters();
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "g");
     svg.setAttribute("class", "preview-label-layer");
+    labels.sort(function (a, b) {
+      const da = a.fallback.x * a.fallback.x + a.fallback.y * a.fallback.y;
+      const db = b.fallback.x * b.fallback.x + b.fallback.y * b.fallback.y;
+      return da - db;
+    });
     labels.forEach(function (entry) {
-      const point = faceLayout[entry.face] && faceLayout[entry.face][entry.index] ? {
-        x: faceLayout[entry.face][entry.index].x,
-        y: faceLayout[entry.face][entry.index].y,
-        visible: true
-      } : entry.fallback;
-      if (!point.visible) {
-        return;
+      let point = entry.fallback;
+      if (availableCenters.length) {
+        let bestIndex = -1;
+        let bestDistance = Infinity;
+        availableCenters.forEach(function (candidate, index) {
+          const dx = candidate.x - entry.fallback.x;
+          const dy = candidate.y - entry.fallback.y;
+          const distance = dx * dx + dy * dy;
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            bestIndex = index;
+          }
+        });
+        if (bestIndex >= 0) {
+          point = availableCenters.splice(bestIndex, 1)[0];
+        }
       }
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("class", "preview-label");
