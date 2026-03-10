@@ -197,6 +197,7 @@
     const partMask = elements.partMask.value;
     const colorScheme = buildColorScheme();
     const backgroundColor = normalizeHex(elements.bg.value) || "#ffffff";
+    const maskedColor = "#808080";
     const size = Number(elements.pzl.value);
     const baseFacelets = buildBaseFacelets();
     const stickerColors = [];
@@ -207,10 +208,10 @@
           const index = face * size * size + row * size + col;
           let color = colorFromFacelet(baseFacelets[index], colorScheme, backgroundColor);
           if (partMask === "corner" && !isCornerSticker(row, col, size)) {
-            color = backgroundColor;
+            color = maskedColor;
           }
           if (partMask === "edge" && !isEdgeSticker(row, col, size)) {
-            color = backgroundColor;
+            color = maskedColor;
           }
           stickerColors.push(color);
         }
@@ -523,7 +524,7 @@
     if (getDragMode() === "z") {
       setNumericValue("rz", Math.round(dragState.baseZ + deltaX * sensitivity));
     } else {
-      setNumericValue("ry", Math.round(dragState.baseY + deltaX * sensitivity));
+      setNumericValue("ry", Math.round(dragState.baseY - deltaX * sensitivity));
       setNumericValue("rx", Math.round(dragState.baseX - deltaY * sensitivity));
     }
     renderPreview();
