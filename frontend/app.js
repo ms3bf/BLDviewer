@@ -48,7 +48,6 @@
   };
   const defaultSchemeFaces = ["u", "r", "f", "d", "l", "b"];
   const faceIndex = ["U", "R", "F", "D", "L", "B"];
-  const pieceAnchorMap = createPieceAnchorMap();
 
   elements.endpoint.value = defaultEndpoint;
 
@@ -229,15 +228,15 @@
   }
 
   const edgeAnchorMap = {
-    UB: { U: "U1", B: "B1" },
-    UR: { U: "U5", R: "R1" },
-    UF: { U: "U7", F: "F1" },
-    UL: { U: "U3", L: "L1" },
+    BU: { U: "U1", B: "B1" },
+    RU: { U: "U5", R: "R1" },
+    FU: { U: "U7", F: "F1" },
+    LU: { U: "U3", L: "L1" },
     FR: { F: "F5", R: "R3" },
     FL: { F: "F3", L: "L5" },
     DF: { D: "D1", F: "F7" },
     DR: { D: "D5", R: "R7" },
-    DB: { D: "D7", B: "B7" },
+    BD: { D: "D7", B: "B7" },
     DL: { D: "D3", L: "L7" },
     BR: { B: "B3", R: "R5" },
     BL: { B: "B5", L: "L3" }
@@ -587,6 +586,8 @@
   setCycleStatus("Enter 2 or 3 edge/corner pieces to generate arrows.", false);
   renderPreview();
 })();
+
+
 
 
 
