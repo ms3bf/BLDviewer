@@ -159,13 +159,20 @@ label {
   gap: 10px;
 }
 
-.drag-card {
+.drag-card,
+.mask-help-card {
   display: grid;
   gap: 10px;
   padding: 14px;
   border: 1px solid rgba(155, 44, 31, 0.12);
   border-radius: 18px;
   background: rgba(255, 249, 238, 0.72);
+}
+
+.mask-help-card {
+  align-content: start;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .drag-modes {

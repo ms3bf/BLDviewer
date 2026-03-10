@@ -144,9 +144,25 @@
               </select>
             </label>
             <label>
+              Part Mask
+              <select id="part-mask" name="partMask">
+                <option value="">none</option>
+                <option value="corner">corner</option>
+                <option value="edge">edge</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
               Stage Rotation
               <input id="stage-rotation" name="stageRotation" type="text" value="" placeholder="x y y2 z'" />
             </label>
+            <div class="mask-help-card">
+              <strong>Mask Guide</strong>
+              <span>`corner` keeps only corner stickers.</span>
+              <span>`edge` keeps only edge stickers.</span>
+            </div>
           </div>
 
           <div class="grid two">

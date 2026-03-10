@@ -13,6 +13,7 @@
     alg: document.querySelector("#alg"),
     cubeCase: document.querySelector("#case"),
     stage: document.querySelector("#stage"),
+    partMask: document.querySelector("#part-mask"),
     stageRotation: document.querySelector("#stage-rotation"),
     sch: document.querySelector("#sch"),
     bg: document.querySelector("#bg"),
@@ -42,6 +43,7 @@
     baseY: 0,
     baseZ: 0
   };
+  const defaultSchemeFaces = ["u", "r", "f", "d", "l", "b"];
 
   elements.endpoint.value = defaultEndpoint;
 
@@ -148,12 +150,69 @@
     };
   }
 
-  function buildFacelets() {
-    const fd = elements.fd.value.trim();
-    if (!fd) {
-      return undefined;
+  function buildBaseFacelets() {
+    const size = Number(elements.pzl.value);
+    const solved = defaultSchemeFaces.map(function (face) {
+      return face.repeat(size * size);
+    }).join("");
+    const raw = elements.fd.value.trim();
+    if (!raw) {
+      return solved;
     }
-    return fd.split("");
+    return (raw + solved.slice(raw.length)).slice(0, solved.length);
+  }
+
+  function isCornerSticker(row, col, size) {
+    return (row === 0 || row === size - 1) && (col === 0 || col === size - 1);
+  }
+
+  function isEdgeSticker(row, col, size) {
+    if (isCornerSticker(row, col, size)) {
+      return false;
+    }
+    return row === 0 || row === size - 1 || col === 0 || col === size - 1;
+  }
+
+  function colorFromFacelet(facelet, colorScheme, backgroundColor) {
+    const faceMap = {
+      u: colorScheme[visualizer.Face.U],
+      r: colorScheme[visualizer.Face.R],
+      f: colorScheme[visualizer.Face.F],
+      d: colorScheme[visualizer.Face.D],
+      l: colorScheme[visualizer.Face.L],
+      b: colorScheme[visualizer.Face.B],
+      n: "#808080",
+      o: "#bfbfbf",
+      t: backgroundColor
+    };
+    return faceMap[facelet] || backgroundColor;
+  }
+
+  function buildStickerColors() {
+    const partMask = elements.partMask.value;
+    const colorScheme = buildColorScheme();
+    const backgroundColor = normalizeHex(elements.bg.value) || "#ffffff";
+    const size = Number(elements.pzl.value);
+    const baseFacelets = buildBaseFacelets();
+    const stickerColors = [];
+
+    for (let face = 0; face < 6; face += 1) {
+      for (let row = 0; row < size; row += 1) {
+        for (let col = 0; col < size; col += 1) {
+          const index = face * size * size + row * size + col;
+          let color = colorFromFacelet(baseFacelets[index], colorScheme, backgroundColor);
+          if (partMask === "corner" && !isCornerSticker(row, col, size)) {
+            color = backgroundColor;
+          }
+          if (partMask === "edge" && !isEdgeSticker(row, col, size)) {
+            color = backgroundColor;
+          }
+          stickerColors.push(color);
+        }
+      }
+    }
+
+    return stickerColors;
   }
 
   function buildArrows() {
@@ -208,6 +267,7 @@
       cubeColor: normalizeHex(elements.cc.value),
       cubeOpacity: Number(elements.co.value),
       stickerOpacity: Number(elements.fo.value),
+      stickerColors: buildStickerColors(),
       dist: Number(elements.dist.value),
       viewportRotations: buildRotationOptions(),
       algorithm: elements.alg.value.trim(),
@@ -224,16 +284,6 @@
 
     if (elements.stageRotation.value.trim()) {
       options.maskAlg = elements.stageRotation.value.trim();
-    }
-
-    const colorScheme = buildColorScheme();
-    if (colorScheme) {
-      options.colorScheme = colorScheme;
-    }
-
-    const facelets = buildFacelets();
-    if (facelets) {
-      options.facelets = facelets;
     }
 
     const arrows = buildArrows();
@@ -257,7 +307,11 @@
     try {
       elements.previewCube.innerHTML = "";
       visualizer.cubeSVG(elements.previewCube, buildRenderOptions());
-      elements.previewStatus.textContent = "Local preview rendered in browser. Export URL may still fail if the remote endpoint is down.";
+      if (elements.partMask.value) {
+        elements.previewStatus.textContent = "Local preview rendered with custom part masking in the frontend. Export URL does not include that custom mask yet.";
+      } else {
+        elements.previewStatus.textContent = "Local preview rendered in browser. Export URL may still fail if the remote endpoint is down.";
+      }
     } catch (error) {
       elements.previewStatus.textContent = "Preview render failed: " + error.message;
     }
