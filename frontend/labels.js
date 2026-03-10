@@ -1,8 +1,18 @@
 (function () {
+  const visualizer = window["sr-visualizer"];
   const numberingApi = function () {
     return window.BLDViewerNumbering;
   };
   const previewCube = document.querySelector("#preview-cube");
+  const referenceCube = document.createElement("div");
+  referenceCube.setAttribute("aria-hidden", "true");
+  referenceCube.style.position = "absolute";
+  referenceCube.style.width = "0";
+  referenceCube.style.height = "0";
+  referenceCube.style.overflow = "hidden";
+  referenceCube.style.pointerEvents = "none";
+  referenceCube.style.opacity = "0";
+  document.body.appendChild(referenceCube);
   const state = {
     visible: false,
     lastRender: null
@@ -431,6 +441,36 @@
     return normalizeColor(polygon.getAttribute("fill") || window.getComputedStyle(polygon).fill);
   }
 
+  function schemeColorMap() {
+    const numbering = numberingApi();
+    const saved = numbering ? numbering.getState() : null;
+    const scheme = saved && saved.scheme ? saved.scheme : "yrbwog";
+    const palette = {
+      y: "#fefe00",
+      w: "#ffffff",
+      r: "#ee0000",
+      o: "#ffa100",
+      b: "#0000f2",
+      g: "#00d800"
+    };
+    const colors = {};
+    faceIndex.forEach(function (face, faceOffset) {
+      const code = scheme.charAt(faceOffset) || "n";
+      colors[face] = palette[code] || "#808080";
+    });
+    return colors;
+  }
+
+  function buildReferenceRenderOptions(renderOptions) {
+    const options = Object.assign({}, renderOptions);
+    options.partMask = "";
+    options.stickerColors = renderOptions.stickerColors.slice();
+    const centerColors = schemeColorMap();
+    faceIndex.forEach(function (face, faceOffset) {
+      options.stickerColors[faceOffset * 9 + 4] = centerColors[face];
+    });
+    return options;
+  }
   function isCornerIndex(index) {
     const row = Math.floor(index / 3);
     const col = index % 3;
@@ -456,8 +496,7 @@
     return true;
   }
 
-  function buildVisibleFaceGroups(renderOptions) {
-    const svg = previewCube.querySelector("svg");
+  function buildFaceGroupsFromSvg(svg, renderOptions) {
     if (!svg) {
       return [];
     }
@@ -474,11 +513,9 @@
         return { x: sum.x + center.x, y: sum.y + center.y };
       }, { x: 0, y: 0 });
       const centerFill = extractPolygonFill(polygons[4]);
-      const matchedFace = renderOptions.partMask
-        ? null
-        : (Object.keys(centerColors).find(function (face) {
-            return centerColors[face] === centerFill;
-          }) || null);
+      const matchedFace = Object.keys(centerColors).find(function (face) {
+        return centerColors[face] === centerFill;
+      }) || null;
       return {
         groupIndex: groupIndex,
         face: matchedFace,
@@ -486,6 +523,56 @@
         stickers: centers
       };
     }).filter(Boolean);
+  }
+
+  function buildRawFaceGroups(element) {
+    const svg = element.querySelector("svg");
+    if (!svg) {
+      return [];
+    }
+    return Array.from(svg.querySelectorAll("g")).map(function (group, groupIndex) {
+      const polygons = Array.from(group.querySelectorAll("polygon"));
+      if (polygons.length !== 9) {
+        return null;
+      }
+      const centers = polygons.map(function (polygon) {
+        return parsePolygonCenter(polygon);
+      });
+      const average = centers.reduce(function (sum, center) {
+        return { x: sum.x + center.x, y: sum.y + center.y };
+      }, { x: 0, y: 0 });
+      return {
+        groupIndex: groupIndex,
+        center: { x: average.x / centers.length, y: average.y / centers.length },
+        stickers: centers
+      };
+    }).filter(Boolean);
+  }
+
+  function buildVisibleFaceGroups(renderOptions) {
+    const svg = previewCube.querySelector("svg");
+    if (!svg) {
+      return [];
+    }
+    return buildFaceGroupsFromSvg(svg, renderOptions);
+  }
+
+  function buildMaskedFaceMap(renderOptions) {
+    if (!visualizer) {
+      return {};
+    }
+    const referenceOptions = buildReferenceRenderOptions(renderOptions);
+    referenceCube.innerHTML = "";
+    visualizer.cubeSVG(referenceCube, referenceOptions);
+    const referenceGroups = buildFaceGroupsFromSvg(referenceCube.querySelector("svg"), referenceOptions);
+    const previewGroups = buildRawFaceGroups(previewCube);
+    return mapFacesToGroups(referenceGroups.map(function (group) {
+      return {
+        face: group.face,
+        x: group.center.x,
+        y: group.center.y
+      };
+    }), previewGroups);
   }
 
   function buildVisibleFaces(renderOptions) {
@@ -562,23 +649,25 @@
     if (!cubeSvg) {
       return;
     }
-    const faceGroups = buildVisibleFaceGroups(renderOptions);
-    const faceToGroup = {};
-    faceGroups.forEach(function (group) {
-      if (group.face) {
-        faceToGroup[group.face] = group;
-      }
-    });
-    const fallbackFaces = buildVisibleFaces(renderOptions).filter(function (face) {
-      return !faceToGroup[face.face];
-    });
-    const fallbackGroups = faceGroups.filter(function (group) {
-      return !group.face;
-    });
-    const fallbackMap = mapFacesToGroups(fallbackFaces, fallbackGroups);
-    Object.keys(fallbackMap).forEach(function (face) {
-      faceToGroup[face] = fallbackMap[face];
-    });
+    const faceToGroup = renderOptions.partMask ? buildMaskedFaceMap(renderOptions) : {};
+    if (!renderOptions.partMask) {
+      const faceGroups = buildVisibleFaceGroups(renderOptions);
+      faceGroups.forEach(function (group) {
+        if (group.face) {
+          faceToGroup[group.face] = group;
+        }
+      });
+      const fallbackFaces = buildVisibleFaces(renderOptions).filter(function (face) {
+        return !faceToGroup[face.face];
+      });
+      const fallbackGroups = faceGroups.filter(function (group) {
+        return !group.face;
+      });
+      const fallbackMap = mapFacesToGroups(fallbackFaces, fallbackGroups);
+      Object.keys(fallbackMap).forEach(function (face) {
+        faceToGroup[face] = fallbackMap[face];
+      });
+    }
     const labels = buildStickerState(renderOptions).filter(function (entry) {
       return Boolean(faceToGroup[entry.face] && faceToGroup[entry.face].stickers[entry.index]);
     });
