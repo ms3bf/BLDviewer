@@ -155,6 +155,13 @@
     };
   }
 
+  function applySavedScheme(scheme) {
+    if (!scheme || scheme.length < 6) {
+      return;
+    }
+    elements.sch.value = scheme;
+  }
+
   function buildBaseFacelets() {
     const size = Number(elements.pzl.value);
     const solved = defaultSchemeFaces.map(function (face) {
@@ -392,39 +399,55 @@
     return arrows.length ? arrows.join(",") : undefined;
   }
 
+  function encodeQueryValue(value, preserveCommas) {
+    let encoded = encodeURIComponent(value);
+    if (preserveCommas) {
+      encoded = encoded.replace(/%2C/gi, ",");
+    }
+    return encoded;
+  }
+
   function buildExportUrl() {
-    const params = new URLSearchParams();
-    params.set("fmt", elements.fmt.value);
-    params.set("size", elements.size.value);
-    params.set("pzl", elements.pzl.value);
-    params.set("view", elements.view.value);
-    params.set("r", buildRotationString());
-    params.set("alg", elements.alg.value.trim());
-    params.set("case", elements.cubeCase.value.trim());
-    params.set("sch", elements.sch.value.trim());
-    params.set("bg", elements.bg.value.trim());
-    params.set("cc", elements.cc.value.trim());
-    params.set("fo", elements.fo.value);
-    params.set("co", elements.co.value);
-    params.set("dist", elements.dist.value);
+    const params = [];
+
+    function addParam(key, value, preserveCommas) {
+      if (value === undefined || value === null || value === "") {
+        return;
+      }
+      params.push(encodeURIComponent(key) + "=" + encodeQueryValue(String(value), preserveCommas));
+    }
+
+    addParam("fmt", elements.fmt.value);
+    addParam("size", elements.size.value);
+    addParam("pzl", elements.pzl.value);
+    addParam("view", elements.view.value);
+    addParam("r", buildRotationString());
+    addParam("alg", elements.alg.value.trim());
+    addParam("case", elements.cubeCase.value.trim());
+    addParam("sch", elements.sch.value.trim());
+    addParam("bg", elements.bg.value.trim());
+    addParam("cc", elements.cc.value.trim());
+    addParam("fo", elements.fo.value);
+    addParam("co", elements.co.value);
+    addParam("dist", elements.dist.value);
 
     const stage = buildStage();
     if (stage) {
-      params.set("stage", stage);
+      addParam("stage", stage);
     }
 
     const fd = elements.fd.value.trim();
     if (fd) {
-      params.set("fd", fd);
+      addParam("fd", fd);
     }
 
     const arw = buildArrows();
     if (arw) {
-      params.set("arw", arw);
+      addParam("arw", arw, true);
     }
 
     const endpoint = (elements.endpoint.value.trim() || defaultEndpoint).replace(/\?$/, "");
-    return endpoint + "?" + params.toString();
+    return params.length ? endpoint + "?" + params.join("&") : endpoint;
   }
 
   function buildRenderOptions() {
@@ -440,7 +463,8 @@
       dist: Number(elements.dist.value),
       viewportRotations: buildRotationOptions(),
       algorithm: elements.alg.value.trim(),
-      case: elements.cubeCase.value.trim()
+      case: elements.cubeCase.value.trim(),
+      partMask: elements.partMask.value.trim()
     };
 
     if (elements.view.value) {
@@ -542,6 +566,13 @@
     }
   }
 
+  window.addEventListener("bldviewer:numbering-saved", function (event) {
+    if (event.detail && event.detail.scheme) {
+      applySavedScheme(event.detail.scheme);
+      renderPreview();
+    }
+  });
+
   elements.form.addEventListener("input", renderPreview);
   elements.form.addEventListener("change", function () {
     updateDragModeLabel();
@@ -567,3 +598,5 @@
   setCycleStatus("Enter 2 or 3 edge/corner pieces to generate arrows.", false);
   renderPreview();
 })();
+
+

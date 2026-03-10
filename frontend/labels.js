@@ -458,6 +458,31 @@
     return normalizeColor(polygon.getAttribute("fill") || window.getComputedStyle(polygon).fill);
   }
 
+  function isCornerIndex(index) {
+    const row = Math.floor(index / 3);
+    const col = index % 3;
+    return (row === 0 || row === 2) && (col === 0 || col === 2);
+  }
+
+  function isEdgeIndex(index) {
+    const row = Math.floor(index / 3);
+    const col = index % 3;
+    if (isCornerIndex(index)) {
+      return false;
+    }
+    return row === 0 || row === 2 || col === 0 || col === 2;
+  }
+
+  function shouldShowLabel(index, partMask) {
+    if (partMask === "corner") {
+      return isCornerIndex(index);
+    }
+    if (partMask === "edge") {
+      return isEdgeIndex(index);
+    }
+    return true;
+  }
+
   function buildVisibleFaceGroups(renderOptions) {
     const svg = previewCube.querySelector("svg");
     if (!svg) {
@@ -498,6 +523,36 @@
       });
   }
 
+  function buildVisibleFaces(renderOptions) {
+    return faceIndex.map(function (face) {
+      return projectFaceCenter(face, renderOptions);
+    }).filter(function (entry) {
+      return entry.visible;
+    });
+  }
+
+  function mapFacesToGroups(faceEntries, faceGroups) {
+    const unusedGroups = faceGroups.slice();
+    const mapping = {};
+    faceEntries.forEach(function (entry) {
+      let bestIndex = -1;
+      let bestDistance = Infinity;
+      unusedGroups.forEach(function (group, index) {
+        const dx = group.center.x - entry.x;
+        const dy = group.center.y - entry.y;
+        const distance = dx * dx + dy * dy;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+      if (bestIndex >= 0) {
+        mapping[entry.face] = unusedGroups.splice(bestIndex, 1)[0];
+      }
+    });
+    return mapping;
+  }
+
   function buildStickerState(renderOptions) {
     const numbering = numberingApi();
     if (!numbering) {
@@ -518,7 +573,7 @@
         };
       });
     }).filter(function (entry) {
-      return entry.label;
+      return entry.label && shouldShowLabel(entry.index, renderOptions.partMask);
     });
   }
   function clearOverlay() {
@@ -547,6 +602,16 @@
       if (group.face) {
         faceToGroup[group.face] = group;
       }
+    });
+    const fallbackFaces = buildVisibleFaces(renderOptions).filter(function (face) {
+      return !faceToGroup[face.face];
+    });
+    const fallbackGroups = faceGroups.filter(function (group) {
+      return !group.face;
+    });
+    const fallbackMap = mapFacesToGroups(fallbackFaces, fallbackGroups);
+    Object.keys(fallbackMap).forEach(function (face) {
+      faceToGroup[face] = fallbackMap[face];
     });
     const labels = buildStickerState(renderOptions).filter(function (entry) {
       return Boolean(faceToGroup[entry.face] && faceToGroup[entry.face].stickers[entry.index]);
@@ -590,6 +655,8 @@
 
   setToggleText();
 })();
+
+
 
 
 
