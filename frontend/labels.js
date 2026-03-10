@@ -319,11 +319,7 @@
   }
 
   function clearOverlay() {
-    const cubeSvg = previewCube.querySelector("svg");
-    if (!cubeSvg) {
-      return;
-    }
-    const existing = cubeSvg.querySelector(".preview-label-layer");
+    const existing = previewCube.querySelector(".preview-label-layer");
     if (existing) {
       existing.remove();
     }
@@ -334,14 +330,11 @@
     if (!state.visible) {
       return;
     }
-    const cubeSvg = previewCube.querySelector("svg");
-    if (!cubeSvg) {
-      return;
-    }
     const labels = buildLabelData(renderOptions);
     const faceLayout = buildFaceLayout(renderOptions) || {};
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("class", "preview-label-layer");
+    svg.setAttribute("viewBox", "-0.9 -0.9 1.8 1.8");
     labels.forEach(function (entry) {
       const point = faceLayout[entry.face] && faceLayout[entry.face][entry.index] ? {
         x: faceLayout[entry.face][entry.index].x,
@@ -358,7 +351,7 @@
       text.textContent = entry.label;
       svg.appendChild(text);
     });
-    cubeSvg.appendChild(svg);
+    previewCube.appendChild(svg);
   }
 
   function setToggleText() {

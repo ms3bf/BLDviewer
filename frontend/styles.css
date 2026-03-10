@@ -489,12 +489,14 @@ textarea {
 }
 
 .preview-label-layer {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
 }
 
 .preview-label {
   font-family: "Segoe UI", sans-serif;
-  font-size: 0.11px;
+  font-size: 0.085px;
   font-weight: 700;
   text-anchor: middle;
   dominant-baseline: middle;
