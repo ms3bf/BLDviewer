@@ -1,13 +1,13 @@
-:root {
-  --bg: #f3efe3;
-  --panel: rgba(255, 252, 245, 0.92);
-  --panel-strong: #fff9ee;
-  --text: #1a1713;
-  --muted: #6b6254;
-  --line: #d4c7af;
-  --accent: #9b2c1f;
-  --accent-strong: #6f1d14;
-  --shadow: 0 24px 80px rgba(92, 54, 22, 0.12);
+ :root {
+  --bg: #06111b;
+  --panel: rgba(10, 22, 35, 0.82);
+  --panel-strong: rgba(18, 37, 56, 0.96);
+  --text: #e8f3ff;
+  --muted: #92a9bd;
+  --line: rgba(111, 185, 255, 0.22);
+  --accent: #6ee7ff;
+  --accent-strong: #30b7ff;
+  --shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
 }
 
 * {
@@ -23,8 +23,9 @@ body {
   font-family: "Segoe UI", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(255, 220, 161, 0.6), transparent 30%),
-    linear-gradient(135deg, #efe2c4, #f8f5ed 48%, #eadfd1);
+    radial-gradient(circle at 20% 15%, rgba(59, 179, 255, 0.20), transparent 26%),
+    radial-gradient(circle at 80% 0%, rgba(111, 231, 255, 0.12), transparent 24%),
+    linear-gradient(145deg, #030811, #07131d 48%, #0d1f31);
 }
 
 .app-shell {
@@ -37,7 +38,7 @@ body {
 .preview-panel,
 .numbering-panel {
   background: var(--panel);
-  border: 1px solid rgba(107, 98, 84, 0.14);
+  border: 1px solid var(--line);
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
 }
@@ -90,15 +91,15 @@ body {
 }
 
 .button.primary {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent-strong);
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #04111b;
+  border-color: rgba(110, 231, 255, 0.4);
 }
 
 .button.is-active {
-  background: var(--accent-strong);
-  color: #fff;
-  border-color: var(--accent-strong);
+  background: rgba(48, 183, 255, 0.24);
+  color: var(--text);
+  border-color: rgba(48, 183, 255, 0.55);
 }
 
 .workspace {
@@ -179,9 +180,9 @@ label {
   display: grid;
   gap: 10px;
   padding: 14px;
-  border: 1px solid rgba(155, 44, 31, 0.12);
+  border: 1px solid rgba(111, 185, 255, 0.16);
   border-radius: 18px;
-  background: rgba(255, 249, 238, 0.72);
+  background: rgba(8, 18, 29, 0.74);
 }
 
 .mask-help-card,
@@ -245,7 +246,7 @@ textarea {
   padding: 11px 12px;
   font: inherit;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(7, 19, 31, 0.92);
 }
 
 input[type="range"] {
@@ -267,15 +268,16 @@ input[type="range"] {
   border-radius: 20px;
   padding: 24px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(242, 231, 215, 0.88)),
+    radial-gradient(circle at 50% 0%, rgba(110, 231, 255, 0.12), transparent 30%),
+    linear-gradient(160deg, rgba(4, 12, 19, 0.96), rgba(11, 25, 39, 0.96)),
     repeating-linear-gradient(
       45deg,
-      rgba(155, 44, 31, 0.04),
-      rgba(155, 44, 31, 0.04) 8px,
+      rgba(48, 183, 255, 0.04),
+      rgba(48, 183, 255, 0.04) 8px,
       rgba(255, 255, 255, 0) 8px,
       rgba(255, 255, 255, 0) 16px
     );
-  border: 1px solid rgba(155, 44, 31, 0.12);
+  border: 1px solid rgba(111, 185, 255, 0.18);
 }
 
 .preview-cube {
@@ -416,7 +418,7 @@ input[type="range"] {
   padding: 0;
   font-size: 1.15rem;
   font-weight: 700;
-  color: #1a1713;
+  color: #081018;
 }
 
 .net-sticker button {
@@ -442,9 +444,9 @@ input[type="range"] {
   font-weight: 700;
   text-anchor: middle;
   dominant-baseline: middle;
-  fill: #1a1713;
+  fill: #f6fbff;
   paint-order: stroke;
-  stroke: rgba(255, 255, 255, 0.75);
+  stroke: rgba(4, 10, 16, 0.82);
   stroke-width: 0.02px;
 }
 
@@ -497,3 +499,15 @@ input[type="range"] {
   order: 1;
 }
 
+
+.numbering-presets {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.preset-label {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
