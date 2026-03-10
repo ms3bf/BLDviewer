@@ -433,8 +433,8 @@
     return faceMap[facelet] || backgroundColor;
   }
 
-  function buildStickerColors() {
-    const partMask = elements.partMask.value;
+  function buildStickerColors(partMaskOverride) {
+    const partMask = typeof partMaskOverride === "string" ? partMaskOverride : elements.partMask.value;
     const colorScheme = buildColorScheme();
     const backgroundColor = normalizeHex(elements.bg.value) || "#ffffff";
     const maskedColor = "#808080";
@@ -656,6 +656,7 @@
       cubeOpacity: Number(elements.co.value),
       stickerOpacity: Number(elements.fo.value),
       stickerColors: buildStickerColors(),
+      baseStickerColors: buildStickerColors(""),
       dist: Number(elements.dist.value),
       viewportRotations: buildRotationOptions(),
       algorithm: elements.alg.value.trim(),

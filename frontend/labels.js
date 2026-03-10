@@ -428,11 +428,31 @@
     }).join("");
   }
 
+  function simulatedStickerCube(renderOptions) {
+    const cube = new CubeData(3);
+    const moves = renderOptions.case ? parseCase(renderOptions.case) : parseAlgorithm(renderOptions.algorithm);
+    moves.forEach(function (unit) {
+      cube.turn(unit);
+    });
+    return cube;
+  }
+
+  function stickerColorLookup(renderOptions) {
+    const source = renderOptions.baseStickerColors || renderOptions.stickerColors || [];
+    const lookup = {};
+    faceIndex.forEach(function (face, faceOffset) {
+      for (let index = 0; index < 9; index += 1) {
+        lookup[face + String(index)] = normalizeColor(source[faceOffset * 9 + index]);
+      }
+    });
+    return lookup;
+  }
   function expectedCenterColors(renderOptions) {
     const colors = {};
-    faceIndex.forEach(function (face, faceOffset) {
-      const centerIndex = faceOffset * 9 + 4;
-      colors[face] = normalizeColor(renderOptions.stickerColors[centerIndex]);
+    const cube = simulatedStickerCube(renderOptions);
+    const colorLookup = stickerColorLookup(renderOptions);
+    faceIndex.forEach(function (face) {
+      colors[face] = colorLookup[cube.faces[face][4]] || "";
     });
     return colors;
   }
@@ -441,34 +461,10 @@
     return normalizeColor(polygon.getAttribute("fill") || window.getComputedStyle(polygon).fill);
   }
 
-  function schemeColorMap() {
-    const numbering = numberingApi();
-    const saved = numbering ? numbering.getState() : null;
-    const scheme = saved && saved.scheme ? saved.scheme : "yrbwog";
-    const palette = {
-      y: "#fefe00",
-      w: "#ffffff",
-      r: "#ee0000",
-      o: "#ffa100",
-      b: "#0000f2",
-      g: "#00d800"
-    };
-    const colors = {};
-    faceIndex.forEach(function (face, faceOffset) {
-      const code = scheme.charAt(faceOffset) || "n";
-      colors[face] = palette[code] || "#808080";
-    });
-    return colors;
-  }
-
   function buildReferenceRenderOptions(renderOptions) {
     const options = Object.assign({}, renderOptions);
     options.partMask = "";
-    options.stickerColors = renderOptions.stickerColors.slice();
-    const centerColors = schemeColorMap();
-    faceIndex.forEach(function (face, faceOffset) {
-      options.stickerColors[faceOffset * 9 + 4] = centerColors[face];
-    });
+    options.stickerColors = (renderOptions.baseStickerColors || renderOptions.stickerColors || []).slice();
     return options;
   }
   function isCornerIndex(index) {
