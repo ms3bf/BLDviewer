@@ -228,97 +228,31 @@
     return stickerColors;
   }
 
-  function makeSticker(face, row, col) {
-    const map = {
-      U: { pos: [col - 1, 1, 1 - row], normal: [0, 1, 0] },
-      R: { pos: [1, 1 - row, 1 - col], normal: [1, 0, 0] },
-      F: { pos: [col - 1, 1 - row, 1], normal: [0, 0, 1] },
-      D: { pos: [col - 1, -1, 1 - row], normal: [0, -1, 0] },
-      L: { pos: [-1, 1 - row, col - 1], normal: [-1, 0, 0] },
-      B: { pos: [1 - col, 1 - row, -1], normal: [0, 0, -1] }
-    };
-    return {
-      face: face,
-      pos: map[face].pos.slice(),
-      normal: map[face].normal.slice()
-    };
-  }
+  const edgeAnchorMap = {
+    UB: { U: "U1", B: "B1" },
+    UR: { U: "U5", R: "R1" },
+    UF: { U: "U7", F: "F1" },
+    UL: { U: "U3", L: "L1" },
+    FR: { F: "F5", R: "R3" },
+    FL: { F: "F3", L: "L5" },
+    DF: { D: "D1", F: "F7" },
+    DR: { D: "D5", R: "R7" },
+    DB: { D: "D7", B: "B7" },
+    DL: { D: "D3", L: "L7" },
+    BR: { B: "B3", R: "R5" },
+    BL: { B: "B5", L: "L3" }
+  };
 
-  function faceFromNormal(normal) {
-    const key = normal.join(",");
-    const lookup = {
-      "0,1,0": "U",
-      "1,0,0": "R",
-      "0,0,1": "F",
-      "0,-1,0": "D",
-      "-1,0,0": "L",
-      "0,0,-1": "B"
-    };
-    return lookup[key];
-  }
-
-  function rowColFromSticker(sticker) {
-    const face = faceFromNormal(sticker.normal);
-    const x = sticker.pos[0];
-    const y = sticker.pos[1];
-    const z = sticker.pos[2];
-    switch (face) {
-      case "U": return { face: face, row: z + 1, col: x + 1 };
-      case "R": return { face: face, row: 1 - y, col: 1 - z };
-      case "F": return { face: face, row: 1 - y, col: x + 1 };
-      case "D": return { face: face, row: 1 - z, col: x + 1 };
-      case "L": return { face: face, row: 1 - y, col: z + 1 };
-      case "B": return { face: face, row: 1 - y, col: 1 - x };
-      default: return { face: face, row: 1, col: 1 };
-    }
-  }
-
-  function createPieceAnchorMap() {
-    const stickers = [];
-    const groups = {};
-    const map = {
-      2: {},
-      3: {}
-    };
-
-    faceIndex.forEach(function (face) {
-      for (let row = 0; row < 3; row += 1) {
-        for (let col = 0; col < 3; col += 1) {
-          if (row === 1 && col === 1) {
-            continue;
-          }
-          stickers.push(makeSticker(face, row, col));
-        }
-      }
-    });
-
-    stickers.forEach(function (sticker) {
-      const key = sticker.pos.join(",");
-      if (!groups[key]) {
-        groups[key] = [];
-      }
-      groups[key].push(sticker);
-    });
-
-    Object.keys(groups).forEach(function (key) {
-      const group = groups[key];
-      if (group.length !== 2 && group.length !== 3) {
-        return;
-      }
-      const faces = group.map(function (sticker) {
-        return faceFromNormal(sticker.normal);
-      });
-      const pieceKey = faces.slice().sort().join("");
-      const anchors = {};
-      group.forEach(function (sticker) {
-        const placement = rowColFromSticker(sticker);
-        anchors[placement.face] = placement.face + String(placement.row * 3 + placement.col);
-      });
-      map[group.length][pieceKey] = anchors;
-    });
-
-    return map;
-  }
+  const cornerAnchorMap = {
+    BLU: { B: "B2", L: "L0", U: "U0" },
+    BRU: { B: "B0", R: "R2", U: "U2" },
+    FRU: { F: "F2", R: "R0", U: "U8" },
+    FLU: { F: "F0", L: "L2", U: "U6" },
+    DFL: { D: "D0", F: "F6", L: "L8" },
+    DFR: { D: "D2", F: "F8", R: "R6" },
+    BDR: { B: "B6", D: "D8", R: "R8" },
+    BDL: { B: "B8", D: "D6", L: "L6" }
+  };
 
   function resolvePieceToken(token, expectedLength) {
     const normalized = (token || "").trim().toUpperCase();
@@ -326,7 +260,8 @@
       throw new Error("Expected " + expectedLength + " letters per piece: " + token);
     }
     const key = normalized.split("").sort().join("");
-    const anchors = pieceAnchorMap[expectedLength][key];
+    const map = expectedLength === 2 ? edgeAnchorMap : cornerAnchorMap;
+    const anchors = map[key];
     if (!anchors) {
       throw new Error("Unknown piece: " + token);
     }
@@ -336,7 +271,6 @@
     }
     return anchor;
   }
-
   function buildCycleArrowSet(value, expectedLength) {
     const tokens = (value || "").trim().toUpperCase().split(/\s+/).filter(Boolean);
     if (!tokens.length) {
@@ -653,6 +587,7 @@
   setCycleStatus("Enter 2 or 3 edge/corner pieces to generate arrows.", false);
   renderPreview();
 })();
+
 
 
 
