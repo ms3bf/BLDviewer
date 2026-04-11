@@ -243,7 +243,6 @@
     } else if (presetName === "hard") {
       setRange(controls.edgeBreaksMin, controls.edgeBreaksMax, 1, 2);
       setRange(controls.cornerBreaksMin, controls.cornerBreaksMax, 1, 2);
-      setRange(controls.edgeFloat3Min, controls.edgeFloat3Max, 1, 1);
       setRange(controls.edgeFlipsMin, controls.edgeFlipsMax, 1, 2);
       setRange(controls.cornerTwistsMin, controls.cornerTwistsMax, 1, 2);
       setRange(controls.edgeAlgsMin, controls.edgeAlgsMax, 6.5, 7);
