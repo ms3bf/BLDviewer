@@ -36,6 +36,10 @@
     probability: document.getElementById("bld-probability"),
     generate: document.getElementById("bld-generate"),
     applyFirst: document.getElementById("bld-apply-first"),
+    quickEasy: document.getElementById("bld-quick-easy"),
+    quickNormal: document.getElementById("bld-quick-normal"),
+    quickHard: document.getElementById("bld-quick-hard"),
+    quickImpossible: document.getElementById("bld-quick-impossible"),
     output: document.getElementById("bld-output"),
     caseInput: document.getElementById("case"),
   };
@@ -189,6 +193,76 @@
     [controls.cornerFloat3Min, controls.cornerFloat3Max],
     [controls.cornerAlgsMin, controls.cornerAlgsMax],
   ];
+
+  function setRange(minInput, maxInput, minValue, maxValue) {
+    minInput.value = String(minValue);
+    maxInput.value = String(maxValue);
+    clampMinMax(minInput, maxInput);
+  }
+
+  function setRangeFull(minInput, maxInput) {
+    setRange(minInput, maxInput, Number(minInput.min), Number(maxInput.max));
+  }
+
+  function refreshAllRangesAndProbability() {
+    sliderPairs.forEach(function (pair) {
+      const baseId = pair[0].id.slice(0, -4);
+      updateRangeUI(baseId);
+    });
+    updateProbability();
+  }
+
+  function applyQuickPreset(presetName) {
+    controls.parityEven.checked = true;
+    controls.parityOdd.checked = true;
+    controls.amount.value = "1";
+
+    setRangeFull(controls.edgeFlipsMin, controls.edgeFlipsMax);
+    setRangeFull(controls.edgeBreaksMin, controls.edgeBreaksMax);
+    setRangeFull(controls.edgeFloat3Min, controls.edgeFloat3Max);
+    setRangeFull(controls.edgeAlgsMin, controls.edgeAlgsMax);
+    setRangeFull(controls.cornerTwistsMin, controls.cornerTwistsMax);
+    setRangeFull(controls.cornerBreaksMin, controls.cornerBreaksMax);
+    setRangeFull(controls.cornerFloat3Min, controls.cornerFloat3Max);
+    setRangeFull(controls.cornerAlgsMin, controls.cornerAlgsMax);
+
+    if (presetName === "easy") {
+      setRange(controls.edgeBreaksMin, controls.edgeBreaksMax, 0, 0);
+      setRange(controls.cornerBreaksMin, controls.cornerBreaksMax, 0, 0);
+      setRange(controls.edgeFlipsMin, controls.edgeFlipsMax, 0, 0);
+      setRange(controls.cornerTwistsMin, controls.cornerTwistsMax, 0, 0);
+      setRange(controls.edgeAlgsMin, controls.edgeAlgsMax, 5, 5);
+      setRange(controls.cornerAlgsMin, controls.cornerAlgsMax, 3, 3);
+    } else if (presetName === "normal") {
+      setRange(controls.edgeBreaksMin, controls.edgeBreaksMax, 0, 1);
+      setRange(controls.cornerBreaksMin, controls.cornerBreaksMax, 0, 1);
+      setRange(controls.edgeFlipsMin, controls.edgeFlipsMax, 0, 1);
+      setRange(controls.cornerTwistsMin, controls.cornerTwistsMax, 0, 1);
+      setRange(controls.edgeAlgsMin, controls.edgeAlgsMax, 6, 6);
+      setRange(controls.cornerAlgsMin, controls.cornerAlgsMax, 4, 4);
+    } else if (presetName === "hard") {
+      setRange(controls.edgeBreaksMin, controls.edgeBreaksMax, 1, 2);
+      setRange(controls.cornerBreaksMin, controls.cornerBreaksMax, 1, 2);
+      setRange(controls.edgeFloat3Min, controls.edgeFloat3Max, 1, 1);
+      setRange(controls.edgeFlipsMin, controls.edgeFlipsMax, 1, 2);
+      setRange(controls.cornerTwistsMin, controls.cornerTwistsMax, 1, 2);
+      setRange(controls.edgeAlgsMin, controls.edgeAlgsMax, 6.5, 7);
+      setRange(controls.cornerAlgsMin, controls.cornerAlgsMax, 4.5, 5);
+    } else if (presetName === "impossible") {
+      if (Math.random() < 0.5) {
+        setRange(controls.edgeAlgsMin, controls.edgeAlgsMax, 8, 8);
+        setRange(controls.cornerAlgsMin, controls.cornerAlgsMax, 5, 5);
+      } else {
+        setRange(controls.edgeAlgsMin, controls.edgeAlgsMax, 8.5, 8.5);
+        setRange(controls.cornerAlgsMin, controls.cornerAlgsMax, 5.5, 5.5);
+      }
+    }
+
+    refreshAllRangesAndProbability();
+    generateScrambles();
+    applyFirstToMainForm();
+  }
+
   sliderPairs.forEach(function (pair) {
     const minInput = pair[0];
     const maxInput = pair[1];
@@ -210,6 +284,18 @@
   controls.parityOdd.addEventListener("change", updateProbability);
   controls.generate.addEventListener("click", generateScrambles);
   controls.applyFirst.addEventListener("click", applyFirstToMainForm);
+  if (controls.quickEasy) {
+    controls.quickEasy.addEventListener("click", function () { applyQuickPreset("easy"); });
+  }
+  if (controls.quickNormal) {
+    controls.quickNormal.addEventListener("click", function () { applyQuickPreset("normal"); });
+  }
+  if (controls.quickHard) {
+    controls.quickHard.addEventListener("click", function () { applyQuickPreset("hard"); });
+  }
+  if (controls.quickImpossible) {
+    controls.quickImpossible.addEventListener("click", function () { applyQuickPreset("impossible"); });
+  }
   controls.amount.addEventListener("input", function () {
     controls.amount.value = String(Math.max(1, Math.min(100, asNumber(controls.amount) || 1)));
   });
