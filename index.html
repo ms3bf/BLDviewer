@@ -49,7 +49,7 @@
             </div>
 
             <div class="numbering-presets">
-              <span class="preset-label" data-i18n="numbering.presets">Default presets</span>
+              <span class="preset-label" data-i18n="numbering.presets">Default numbering</span>
               <button id="numbering-preset-massan" class="button ghost" type="button" data-i18n="numbering.massan">Massan</button>
               <button id="numbering-preset-speffz" class="button ghost" type="button" data-i18n="numbering.speffz">Speffz</button>
             </div>
@@ -138,27 +138,9 @@
             </div>
           </div>
 
-          <div class="drag-card">
-            <div class="control-head">
-              <span data-i18n="drag.title">Drag Rotation</span>
-              <output id="drag-mode-output">XY</output>
-            </div>
-            <div class="drag-modes" role="group" data-i18n-aria-label="aria.dragMode" aria-label="Drag rotation mode">
-              <label class="chip">
-                <input type="radio" name="drag-mode" value="xy" checked />
-                <span>XY</span>
-              </label>
-              <label class="chip">
-                <input type="radio" name="drag-mode" value="z" />
-                <span>Z</span>
-              </label>
-            </div>
-            <p class="drag-help" data-i18n="drag.help">Drag the preview to rotate. XY changes X and Y together. Z mode maps horizontal drag to Z.</p>
-          </div>
-
           <label class="priority-algorithm">
             <span data-i18n="form.algorithm">Algorithm</span>
-            <input id="alg" name="alg" type="text" value="R U R' U'" />
+            <input id="alg" name="alg" type="text" value="" />
           </label>
 
           <label class="priority-scramble">
@@ -275,31 +257,31 @@
           </div>
 
           <!-- BEGIN_ADDED_BLD_SCRAMBLER_UI -->
-          <section id="bld-scrambler-panel" class="bld-scrambler-panel">
+          <section id="bld-scrambler-panel" class="bld-scrambler-panel priority-scrambler-top">
             <div class="control-head">
-              <span>BLD Scramble Filter</span>
+              <span data-i18n="scrambler.title">スクランブル生成 by Xi Lu</span>
             </div>
             <div class="bld-scr-row">
               <label class="bld-inline-check">
                 <input type="checkbox" id="bld-parity-even" checked />
-                <span>Even</span>
+                <span data-i18n="scrambler.parityEven">偶数</span>
               </label>
               <label class="bld-inline-check">
                 <input type="checkbox" id="bld-parity-odd" checked />
-                <span>Odd</span>
+                <span data-i18n="scrambler.parityOdd">奇数</span>
               </label>
               <label>
-                <span>Amount</span>
+                <span data-i18n="scrambler.amount">生成数</span>
                 <input id="bld-amount" type="number" min="1" max="100" step="1" value="1" />
               </label>
             </div>
 
             <div class="grid two">
               <div class="bld-filter-card">
-                <strong>Edge</strong>
+                <strong data-i18n="scrambler.edge">エッジ</strong>
                 <div class="bld-slider-stack">
                   <div class="bld-slider-row">
-                    <span>Flips</span>
+                    <span data-i18n="scrambler.eo">EO</span>
                     <div class="bld-range-wrap">
                       <div class="bld-range-container" id="bld-edge-flips-container">
                         <div class="bld-range-selected"></div>
@@ -310,7 +292,7 @@
                     </div>
                   </div>
                   <div class="bld-slider-row">
-                    <span>Breaks</span>
+                    <span data-i18n="scrambler.breaks">ループ途切れ</span>
                     <div class="bld-range-wrap">
                       <div class="bld-range-container" id="bld-edge-breaks-container">
                         <div class="bld-range-selected"></div>
@@ -321,7 +303,7 @@
                     </div>
                   </div>
                   <div class="bld-slider-row">
-                    <span>Float3</span>
+                    <span data-i18n="scrambler.float3">フローティング</span>
                     <div class="bld-range-wrap">
                       <div class="bld-range-container" id="bld-edge-float3-container">
                         <div class="bld-range-selected"></div>
@@ -332,7 +314,7 @@
                     </div>
                   </div>
                   <div class="bld-slider-row">
-                    <span>Algs</span>
+                    <span data-i18n="scrambler.algs">手順数</span>
                     <div class="bld-range-wrap">
                       <div class="bld-range-container" id="bld-edge-algs-container">
                         <div class="bld-range-selected"></div>
@@ -345,10 +327,10 @@
                 </div>
               </div>
               <div class="bld-filter-card">
-                <strong>Corner</strong>
+                <strong data-i18n="scrambler.corner">コーナー</strong>
                 <div class="bld-slider-stack">
                   <div class="bld-slider-row">
-                    <span>Twists</span>
+                    <span data-i18n="scrambler.co">CO</span>
                     <div class="bld-range-wrap">
                       <div class="bld-range-container" id="bld-corner-twists-container">
                         <div class="bld-range-selected"></div>
@@ -359,7 +341,7 @@
                     </div>
                   </div>
                   <div class="bld-slider-row">
-                    <span>Breaks</span>
+                    <span data-i18n="scrambler.breaks">ループ途切れ</span>
                     <div class="bld-range-wrap">
                       <div class="bld-range-container" id="bld-corner-breaks-container">
                         <div class="bld-range-selected"></div>
@@ -370,7 +352,7 @@
                     </div>
                   </div>
                   <div class="bld-slider-row">
-                    <span>Float3</span>
+                    <span data-i18n="scrambler.float3">フローティング</span>
                     <div class="bld-range-wrap">
                       <div class="bld-range-container" id="bld-corner-float3-container">
                         <div class="bld-range-selected"></div>
@@ -381,7 +363,7 @@
                     </div>
                   </div>
                   <div class="bld-slider-row">
-                    <span>Algs</span>
+                    <span data-i18n="scrambler.algs">手順数</span>
                     <div class="bld-range-wrap">
                       <div class="bld-range-container" id="bld-corner-algs-container">
                         <div class="bld-range-selected"></div>
@@ -396,12 +378,12 @@
             </div>
 
             <div class="bld-scr-row">
-              <p id="bld-probability" class="cycle-status">Probability: ...</p>
-              <button id="bld-generate" class="button ghost" type="button">Generate Scramble(s)</button>
-              <button id="bld-apply-first" class="button primary" type="button">Apply First To Scramble</button>
+              <p id="bld-probability" class="cycle-status" data-i18n="scrambler.probabilityLoading">出現確率: ...</p>
+              <button id="bld-generate" class="button ghost" type="button" data-i18n="scrambler.generate">生成</button>
+              <button id="bld-apply-first" class="button primary" type="button" data-i18n="scrambler.apply">画像に適応</button>
             </div>
             <label>
-              <span>Generated</span>
+              <span data-i18n="scrambler.generated">生成結果</span>
               <textarea id="bld-output" rows="5" readonly></textarea>
             </label>
           </section>

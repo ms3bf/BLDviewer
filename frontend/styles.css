@@ -125,6 +125,10 @@ body {
   order: -30;
 }
 
+.priority-scrambler-top {
+  order: -40;
+}
+
 .priority-scramble {
   order: -20;
 }
@@ -195,7 +199,6 @@ label {
   gap: 10px;
 }
 
-.drag-card,
 .mask-help-card,
 .cycle-card {
   display: grid;
@@ -211,42 +214,6 @@ label {
   align-content: start;
   color: var(--muted);
   font-size: 0.9rem;
-}
-
-.drag-modes {
-  display: flex;
-  gap: 10px;
-}
-
-.chip {
-  position: relative;
-  cursor: pointer;
-}
-
-.chip input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.chip span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 64px;
-  padding: 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
-  color: var(--text);
-  font-weight: 600;
-}
-
-.chip input:checked + span {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent-strong);
 }
 
 .drag-help,

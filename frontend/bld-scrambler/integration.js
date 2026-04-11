@@ -39,6 +39,22 @@
     output: document.getElementById("bld-output"),
     caseInput: document.getElementById("case"),
   };
+  const i18n = window.BLDViewerI18n;
+
+  function t(key, args) {
+    if (i18n && typeof i18n.t === "function") {
+      return i18n.t(key, args);
+    }
+    const fallback = {
+      "scrambler.probabilityLoading": "Probability: ...",
+      "scrambler.probabilityUnavailable": "Probability: unavailable",
+      "scrambler.probability": "Probability: {value}%"
+    };
+    const template = fallback[key] || key;
+    return String(template).replace(/\{(\w+)\}/g, function (_, name) {
+      return args && Object.prototype.hasOwnProperty.call(args, name) ? args[name] : "";
+    });
+  }
 
   function asNumber(input) {
     return Number(input.value);
@@ -131,10 +147,10 @@
     const cond = buildConditions();
     const prob = window.BldScramblerCore.getProbabilityFromBoolFunction(cond.edgeCond, cond.cornerCond);
     if (!isFinite(prob)) {
-      controls.probability.textContent = "Probability: unavailable (dependency/load issue)";
+      controls.probability.textContent = t("scrambler.probabilityUnavailable");
       return prob;
     }
-    controls.probability.textContent = "Probability: " + (prob * 100).toFixed(10) + "%";
+    controls.probability.textContent = t("scrambler.probability", { value: (prob * 100).toFixed(10) });
     return prob;
   }
 
@@ -197,6 +213,12 @@
   controls.amount.addEventListener("input", function () {
     controls.amount.value = String(Math.max(1, Math.min(100, asNumber(controls.amount) || 1)));
   });
+
+  if (i18n && typeof i18n.subscribe === "function") {
+    i18n.subscribe(function () {
+      updateProbability();
+    });
+  }
 
   updateProbability();
 })();

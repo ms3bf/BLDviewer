@@ -16,7 +16,7 @@
       "numbering.hide": "\u30ca\u30f3\u30d0\u30ea\u30f3\u30b0\u975e\u8868\u793a",
       "numbering.saved": "\u30ca\u30f3\u30d0\u30ea\u30f3\u30b0\u3092\u4fdd\u5b58\u3057\u307e\u3057\u305f\u3002",
       "numbering.resetDone": "\u30ca\u30f3\u30d0\u30ea\u30f3\u30b0\u6587\u5b57\u3092\u30ea\u30bb\u30c3\u30c8\u3057\u307e\u3057\u305f\u3002",
-      "numbering.presets": "\u30c7\u30d5\u30a9\u30eb\u30c8\u30d7\u30ea\u30bb\u30c3\u30c8",
+      "numbering.presets": "\u30c7\u30d5\u30a9\u30eb\u30c8\u30ca\u30f3\u30d0\u30ea\u30f3\u30b0",
       "numbering.massan": "\u307e\u3063\u3055\u3093",
       "numbering.speffz": "Speffz",
       "numbering.presetApplied": "{name} \u30d7\u30ea\u30bb\u30c3\u30c8\u3092\u9069\u7528\u3057\u307e\u3057\u305f\u3002",
@@ -42,8 +42,23 @@
       "form.distance": "\u8ddd\u96e2",
       "form.arrows": "\u77e2\u5370",
       "form.arrowsPlaceholder": "U0U2,R6R2R0-s8-i5-yellow",
-      "drag.title": "\u30c9\u30e9\u30c3\u30b0\u56de\u8ee2",
-      "drag.help": "\u30d7\u30ec\u30d3\u30e5\u30fc\u3092\u30c9\u30e9\u30c3\u30b0\u3057\u3066\u56de\u8ee2\u3057\u307e\u3059\u3002XY \u306f X/Y \u3092\u540c\u6642\u306b\u52d5\u304b\u3057\u3001Z \u306f\u6a2a\u30c9\u30e9\u30c3\u30b0\u3092 Z \u56de\u8ee2\u306b\u5272\u308a\u5f53\u3066\u307e\u3059\u3002",
+      "scrambler.title": "\u30b9\u30af\u30e9\u30f3\u30d6\u30eb\u751f\u6210 by Xi Lu",
+      "scrambler.parityEven": "\u5076\u6570",
+      "scrambler.parityOdd": "\u5947\u6570",
+      "scrambler.amount": "\u751f\u6210\u6570",
+      "scrambler.edge": "\u30a8\u30c3\u30b8",
+      "scrambler.corner": "\u30b3\u30fc\u30ca\u30fc",
+      "scrambler.eo": "EO",
+      "scrambler.co": "CO",
+      "scrambler.breaks": "\u30eb\u30fc\u30d7\u9014\u5207\u308c",
+      "scrambler.float3": "\u30d5\u30ed\u30fc\u30c6\u30a3\u30f3\u30b0",
+      "scrambler.algs": "\u624b\u9806\u6570",
+      "scrambler.probability": "\u51fa\u73fe\u78ba\u7387: {value}%",
+      "scrambler.probabilityLoading": "\u51fa\u73fe\u78ba\u7387: ...",
+      "scrambler.probabilityUnavailable": "\u51fa\u73fe\u78ba\u7387: \u8a08\u7b97\u4e0d\u53ef",
+      "scrambler.generate": "\u751f\u6210",
+      "scrambler.apply": "\u753b\u50cf\u306b\u9069\u5fdc",
+      "scrambler.generated": "\u751f\u6210\u7d50\u679c",
       "mask.guideTitle": "\u30de\u30b9\u30af\u30ac\u30a4\u30c9",
       "mask.guideCorner": "`corner` \u306f\u30b3\u30fc\u30ca\u30fc\u30b9\u30c6\u30c3\u30ab\u30fc\u3060\u3051\u3092\u6b8b\u3057\u307e\u3059\u3002",
       "mask.guideEdge": "`edge` \u306f\u30a8\u30c3\u30b8\u30b9\u30c6\u30c3\u30ab\u30fc\u3060\u3051\u3092\u6b8b\u3057\u307e\u3059\u3002",
@@ -60,8 +75,6 @@
       "cycle.edgeError": "Edge cycle: {message}",
       "cycle.cornerError": "Corner cycle: {message}",
       "preview.downloadHelp": "\u73fe\u5728\u898b\u3048\u3066\u3044\u308b\u30ad\u30e5\u30fc\u30d6\u3092\u3001\u30ca\u30f3\u30d0\u30ea\u30f3\u30b0\u6587\u5b57\u4ed8\u304d\u3067\u30ed\u30fc\u30ab\u30eb\u4fdd\u5b58\u3057\u307e\u3059\u3002",
-      "preview.rendered": "\u30d6\u30e9\u30a6\u30b6\u5185\u3067\u30ed\u30fc\u30ab\u30eb\u30d7\u30ec\u30d3\u30e5\u30fc\u3092\u63cf\u753b\u3057\u307e\u3057\u305f\u3002",
-      "preview.renderedMask": "\u30d6\u30e9\u30a6\u30b6\u5185\u3067\u30ed\u30fc\u30ab\u30eb\u30d7\u30ec\u30d3\u30e5\u30fc\u3092\u63cf\u753b\u3057\u307e\u3057\u305f\u3002\u30ab\u30b9\u30bf\u30e0 part mask \u3082\u30ed\u30fc\u30ab\u30eb\u3067\u53cd\u6620\u3057\u3066\u3044\u307e\u3059\u3002",
       "preview.noVisualizer": "sr-visualizer \u306e\u8aad\u307f\u8fbc\u307f\u306b\u5931\u6557\u3057\u307e\u3057\u305f\u3002",
       "preview.failed": "\u30d7\u30ec\u30d3\u30e5\u30fc\u63cf\u753b\u306b\u5931\u6557\u3057\u307e\u3057\u305f: {message}",
       "preview.noSvg": "\u30c0\u30a6\u30f3\u30ed\u30fc\u30c9\u3059\u308b SVG \u304c\u307e\u3060\u3042\u308a\u307e\u305b\u3093\u3002",
@@ -106,7 +119,7 @@
       "numbering.hide": "Hide Numbering",
       "numbering.saved": "Numbering saved locally.",
       "numbering.resetDone": "Numbering letters reset.",
-      "numbering.presets": "Default presets",
+      "numbering.presets": "Default numbering",
       "numbering.massan": "Massan",
       "numbering.speffz": "Speffz",
       "numbering.presetApplied": "Applied the {name} preset.",
@@ -132,8 +145,23 @@
       "form.distance": "Distance",
       "form.arrows": "Arrows",
       "form.arrowsPlaceholder": "U0U2,R6R2R0-s8-i5-yellow",
-      "drag.title": "Drag Rotation",
-      "drag.help": "Drag the preview to rotate. XY changes X and Y together. Z mode maps horizontal drag to Z.",
+      "scrambler.title": "BLD Scramble Filter by Xi Lu",
+      "scrambler.parityEven": "Even",
+      "scrambler.parityOdd": "Odd",
+      "scrambler.amount": "Amount",
+      "scrambler.edge": "Edge",
+      "scrambler.corner": "Corner",
+      "scrambler.eo": "EO",
+      "scrambler.co": "CO",
+      "scrambler.breaks": "Breaks",
+      "scrambler.float3": "Float3",
+      "scrambler.algs": "Algs",
+      "scrambler.probability": "Probability: {value}%",
+      "scrambler.probabilityLoading": "Probability: ...",
+      "scrambler.probabilityUnavailable": "Probability: unavailable",
+      "scrambler.generate": "Generate",
+      "scrambler.apply": "Apply to image",
+      "scrambler.generated": "Generated",
       "mask.guideTitle": "Mask Guide",
       "mask.guideCorner": "`corner` keeps only corner stickers.",
       "mask.guideEdge": "`edge` keeps only edge stickers.",
@@ -150,8 +178,6 @@
       "cycle.edgeError": "Edge cycle: {message}",
       "cycle.cornerError": "Corner cycle: {message}",
       "preview.downloadHelp": "Downloads the currently visible cube locally, including numbering text.",
-      "preview.rendered": "Local preview rendered in the browser.",
-      "preview.renderedMask": "Local preview rendered in the browser. Custom part masking is applied locally too.",
       "preview.noVisualizer": "sr-visualizer failed to load.",
       "preview.failed": "Preview render failed: {message}",
       "preview.noSvg": "There is no SVG available to download yet.",
@@ -160,7 +186,6 @@
       "preview.downloadFailed": "Download failed: {message}",
       "actions.download": "Download",
       "aria.languageButtons": "Language buttons",
-      "aria.dragMode": "Drag rotation mode",
       "aria.cubePreview": "Cube preview",
       "errors.rasterizeFailed": "Unable to rasterize SVG.",
       "errors.emptyBlob": "Canvas export returned no blob.",
@@ -256,7 +281,6 @@
     previewCube: document.querySelector("#preview-cube"),
     previewStatus: document.querySelector("#preview-status"),
     form: document.querySelector("#viewer-form"),
-    dragModeOutput: document.querySelector("#drag-mode-output"),
     downloadRender: document.querySelector("#download-render"),
     langJa: document.querySelector("#lang-ja"),
     langEn: document.querySelector("#lang-en")
@@ -534,7 +558,7 @@
     cycleKey: "cycle.idle",
     cycleArgs: null,
     cycleError: false,
-    previewKey: "preview.rendered",
+    previewKey: "",
     previewArgs: null
   };
 
@@ -553,7 +577,7 @@
   function setPreviewStatus(key, args) {
     statusState.previewKey = key;
     statusState.previewArgs = args || null;
-    elements.previewStatus.textContent = t(key, args || undefined);
+    elements.previewStatus.textContent = key ? t(key, args || undefined) : "";
   }
 
   function parseArrowValue(value) {
@@ -700,23 +724,10 @@
           renderOptions: renderOptions
         }
       }));
-      if (elements.partMask.value) {
-        setPreviewStatus("preview.renderedMask");
-      } else {
-        setPreviewStatus("preview.rendered");
-      }
+      setPreviewStatus("");
     } catch (error) {
       setPreviewStatus("preview.failed", { message: error.message });
     }
-  }
-
-  function getDragMode() {
-    const selected = document.querySelector('input[name="drag-mode"]:checked');
-    return selected ? selected.value : "xy";
-  }
-
-  function updateDragModeLabel() {
-    elements.dragModeOutput.textContent = getDragMode().toUpperCase();
   }
 
   function beginDrag(event) {
@@ -738,12 +749,8 @@
     const deltaX = event.clientX - dragState.startX;
     const deltaY = event.clientY - dragState.startY;
     const sensitivity = 0.7;
-    if (getDragMode() === "z") {
-      setNumericValue("rz", Math.round(dragState.baseZ + deltaX * sensitivity));
-    } else {
-      setNumericValue("ry", Math.round(dragState.baseY - deltaX * sensitivity));
-      setNumericValue("rx", Math.round(dragState.baseX - deltaY * sensitivity));
-    }
+    setNumericValue("ry", Math.round(dragState.baseY - deltaX * sensitivity));
+    setNumericValue("rx", Math.round(dragState.baseX - deltaY * sensitivity));
     renderPreview();
   }
 
@@ -863,10 +870,7 @@
   });
 
   elements.form.addEventListener("input", renderPreview);
-  elements.form.addEventListener("change", function () {
-    updateDragModeLabel();
-    renderPreview();
-  });
+  elements.form.addEventListener("change", renderPreview);
   elements.previewCube.addEventListener("pointerdown", beginDrag);
   elements.previewCube.addEventListener("pointermove", moveDrag);
   elements.previewCube.addEventListener("pointerup", endDrag);
@@ -888,7 +892,6 @@
   syncNumericControls();
   translateStaticDom();
   updateLanguageButtons();
-  updateDragModeLabel();
   setCycleStatus("cycle.idle", null, false);
   renderPreview();
 })();
