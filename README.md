@@ -33,3 +33,14 @@ The current app renders and downloads cubes locally in the browser.
 
 - Numbering and language preferences are stored in browser `localStorage`.
 - `server/visualcube/` contains copied VisualCube-derived code and should remain under LGPL-compatible terms.
+
+## Added Scrambler Module (Separated)
+
+The 3BLD scramble generator was added as an isolated module so it can be audited or removed without touching the main viewer logic.
+
+- Module directory: `frontend/bld-scrambler/`
+- UI block markers in `index.html`:
+  - `BEGIN_ADDED_BLD_SCRAMBLER_UI` / `END_ADDED_BLD_SCRAMBLER_UI`
+  - `BEGIN_ADDED_BLD_SCRAMBLER_SCRIPTS` / `END_ADDED_BLD_SCRAMBLER_SCRIPTS`
+- CSS block markers in `frontend/styles.css`:
+  - `BEGIN_ADDED_BLD_SCRAMBLER_STYLES` / `END_ADDED_BLD_SCRAMBLER_STYLES`

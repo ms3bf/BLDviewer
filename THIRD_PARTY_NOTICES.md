@@ -23,3 +23,18 @@ Notes:
 - The minified file references `srVisualizer.min.js.LICENSE.txt` in its banner,
   but that file is not currently present in this repository.
 - Add the upstream license text/file when available to ensure full attribution completeness.
+
+## bld-scr / min2phase integration (added module)
+
+- Component path: `frontend/bld-scrambler/`
+- Upstream projects:
+  - `helloluxi/bld-scr` (for `cycler.js` and the sampling/filtering structure)
+  - `cs0x7f/min2phase.js` lineage (bundled as `min2phase.js` in upstream)
+- Source repository:
+  - https://github.com/helloluxi/bld-scr
+- License: GNU General Public License v3.0 (GPL-3.0)
+- Added files in this repository:
+  - `frontend/bld-scrambler/min2phase.js`
+  - `frontend/bld-scrambler/cycler.js`
+  - `frontend/bld-scrambler/scrambler-core.js` (adapted integration wrapper)
+  - `frontend/bld-scrambler/integration.js` (local UI bridge)

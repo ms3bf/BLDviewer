@@ -273,6 +273,139 @@
             </label>
 <p id="cycle-status" class="cycle-status" data-state="info"></p>
           </div>
+
+          <!-- BEGIN_ADDED_BLD_SCRAMBLER_UI -->
+          <section id="bld-scrambler-panel" class="bld-scrambler-panel">
+            <div class="control-head">
+              <span>BLD Scramble Filter</span>
+            </div>
+            <div class="bld-scr-row">
+              <label class="bld-inline-check">
+                <input type="checkbox" id="bld-parity-even" checked />
+                <span>Even</span>
+              </label>
+              <label class="bld-inline-check">
+                <input type="checkbox" id="bld-parity-odd" checked />
+                <span>Odd</span>
+              </label>
+              <label>
+                <span>Amount</span>
+                <input id="bld-amount" type="number" min="1" max="100" step="1" value="1" />
+              </label>
+            </div>
+
+            <div class="grid two">
+              <div class="bld-filter-card">
+                <strong>Edge</strong>
+                <div class="bld-slider-stack">
+                  <div class="bld-slider-row">
+                    <span>Flips</span>
+                    <div class="bld-range-wrap">
+                      <div class="bld-range-container" id="bld-edge-flips-container">
+                        <div class="bld-range-selected"></div>
+                        <input id="bld-edge-flips-min" class="bld-range-slider" type="range" min="0" max="11" step="1" value="0" />
+                        <input id="bld-edge-flips-max" class="bld-range-slider" type="range" min="0" max="11" step="1" value="11" />
+                      </div>
+                      <span id="bld-edge-flips-value" class="bld-range-value">0-11</span>
+                    </div>
+                  </div>
+                  <div class="bld-slider-row">
+                    <span>Breaks</span>
+                    <div class="bld-range-wrap">
+                      <div class="bld-range-container" id="bld-edge-breaks-container">
+                        <div class="bld-range-selected"></div>
+                        <input id="bld-edge-breaks-min" class="bld-range-slider" type="range" min="0" max="5" step="1" value="0" />
+                        <input id="bld-edge-breaks-max" class="bld-range-slider" type="range" min="0" max="5" step="1" value="5" />
+                      </div>
+                      <span id="bld-edge-breaks-value" class="bld-range-value">0-5</span>
+                    </div>
+                  </div>
+                  <div class="bld-slider-row">
+                    <span>Float3</span>
+                    <div class="bld-range-wrap">
+                      <div class="bld-range-container" id="bld-edge-float3-container">
+                        <div class="bld-range-selected"></div>
+                        <input id="bld-edge-float3-min" class="bld-range-slider" type="range" min="0" max="3" step="1" value="0" />
+                        <input id="bld-edge-float3-max" class="bld-range-slider" type="range" min="0" max="3" step="1" value="3" />
+                      </div>
+                      <span id="bld-edge-float3-value" class="bld-range-value">0-3</span>
+                    </div>
+                  </div>
+                  <div class="bld-slider-row">
+                    <span>Algs</span>
+                    <div class="bld-range-wrap">
+                      <div class="bld-range-container" id="bld-edge-algs-container">
+                        <div class="bld-range-selected"></div>
+                        <input id="bld-edge-algs-min" class="bld-range-slider" type="range" min="0" max="8.5" step="0.5" value="0" />
+                        <input id="bld-edge-algs-max" class="bld-range-slider" type="range" min="0" max="8.5" step="0.5" value="8.5" />
+                      </div>
+                      <span id="bld-edge-algs-value" class="bld-range-value">0-8.5</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="bld-filter-card">
+                <strong>Corner</strong>
+                <div class="bld-slider-stack">
+                  <div class="bld-slider-row">
+                    <span>Twists</span>
+                    <div class="bld-range-wrap">
+                      <div class="bld-range-container" id="bld-corner-twists-container">
+                        <div class="bld-range-selected"></div>
+                        <input id="bld-corner-twists-min" class="bld-range-slider" type="range" min="0" max="7" step="1" value="0" />
+                        <input id="bld-corner-twists-max" class="bld-range-slider" type="range" min="0" max="7" step="1" value="7" />
+                      </div>
+                      <span id="bld-corner-twists-value" class="bld-range-value">0-7</span>
+                    </div>
+                  </div>
+                  <div class="bld-slider-row">
+                    <span>Breaks</span>
+                    <div class="bld-range-wrap">
+                      <div class="bld-range-container" id="bld-corner-breaks-container">
+                        <div class="bld-range-selected"></div>
+                        <input id="bld-corner-breaks-min" class="bld-range-slider" type="range" min="0" max="3" step="1" value="0" />
+                        <input id="bld-corner-breaks-max" class="bld-range-slider" type="range" min="0" max="3" step="1" value="3" />
+                      </div>
+                      <span id="bld-corner-breaks-value" class="bld-range-value">0-3</span>
+                    </div>
+                  </div>
+                  <div class="bld-slider-row">
+                    <span>Float3</span>
+                    <div class="bld-range-wrap">
+                      <div class="bld-range-container" id="bld-corner-float3-container">
+                        <div class="bld-range-selected"></div>
+                        <input id="bld-corner-float3-min" class="bld-range-slider" type="range" min="0" max="2" step="1" value="0" />
+                        <input id="bld-corner-float3-max" class="bld-range-slider" type="range" min="0" max="2" step="1" value="2" />
+                      </div>
+                      <span id="bld-corner-float3-value" class="bld-range-value">0-2</span>
+                    </div>
+                  </div>
+                  <div class="bld-slider-row">
+                    <span>Algs</span>
+                    <div class="bld-range-wrap">
+                      <div class="bld-range-container" id="bld-corner-algs-container">
+                        <div class="bld-range-selected"></div>
+                        <input id="bld-corner-algs-min" class="bld-range-slider" type="range" min="0" max="5.5" step="0.5" value="0" />
+                        <input id="bld-corner-algs-max" class="bld-range-slider" type="range" min="0" max="5.5" step="0.5" value="5.5" />
+                      </div>
+                      <span id="bld-corner-algs-value" class="bld-range-value">0-5.5</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bld-scr-row">
+              <p id="bld-probability" class="cycle-status">Probability: ...</p>
+              <button id="bld-generate" class="button ghost" type="button">Generate Scramble(s)</button>
+              <button id="bld-apply-first" class="button primary" type="button">Apply First To Scramble</button>
+            </div>
+            <label>
+              <span>Generated</span>
+              <textarea id="bld-output" rows="5" readonly></textarea>
+            </label>
+          </section>
+          <!-- END_ADDED_BLD_SCRAMBLER_UI -->
         </form>
 
         <section class="preview-panel">
@@ -292,5 +425,13 @@
     <script src="./frontend/app.js"></script>
     <script src="./frontend/numbering.js"></script>
     <script src="./frontend/labels.js"></script>
+    <!-- BEGIN_ADDED_BLD_SCRAMBLER_SCRIPTS -->
+    <script src="./frontend/bld-scrambler/min2phase.js"></script>
+    <script src="./frontend/bld-scrambler/cycler.js"></script>
+    <script src="./frontend/bld-scrambler/scrambler-core.js"></script>
+    <!-- END_ADDED_BLD_SCRAMBLER_SCRIPTS -->
+    <!-- BEGIN_ADDED_BLD_SCRAMBLER_INTEGRATION_SCRIPT -->
+    <script src="./frontend/bld-scrambler/integration.js"></script>
+    <!-- END_ADDED_BLD_SCRAMBLER_INTEGRATION_SCRIPT -->
   </body>
 </html>
