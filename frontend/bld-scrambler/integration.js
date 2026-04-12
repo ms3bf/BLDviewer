@@ -241,6 +241,13 @@
       setRange(controls.edgeAlgsMin, controls.edgeAlgsMax, 6, 6);
       setRange(controls.cornerAlgsMin, controls.cornerAlgsMax, 4, 4);
     } else if (presetName === "hard") {
+      if (Math.random() < 0.5) {
+        controls.parityEven.checked = true;
+        controls.parityOdd.checked = false;
+      } else {
+        controls.parityEven.checked = false;
+        controls.parityOdd.checked = true;
+      }
       setRange(controls.edgeBreaksMin, controls.edgeBreaksMax, 1, 2);
       setRange(controls.cornerBreaksMin, controls.cornerBreaksMax, 1, 2);
       setRange(controls.edgeFlipsMin, controls.edgeFlipsMax, 1, 2);
