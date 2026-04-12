@@ -2,6 +2,22 @@
 
 Frontend-only cube viewer for BLD practice.
 
+## Upstream Attribution / Derived Work Notice
+
+This project includes copied and modified code from upstream projects:
+
+- VisualCube (`Cride5/visualcube`)
+  - URL: https://github.com/Cride5/visualcube
+  - Used for cube rendering logic references and compatibility behavior.
+  - License: GNU Lesser General Public License v3.0 or later (LGPL-3.0-or-later)
+
+- bld-scr (`helloluxi/bld-scr`)
+  - URL: https://github.com/helloluxi/bld-scr
+  - Used for BLD scramble generation/filter logic (`frontend/bld-scrambler/`), with local modifications.
+  - License: GNU General Public License v3.0 (GPL-3.0)
+
+Please keep these attributions and comply with each upstream license when redistributing or modifying this repository.
+
 ## Live Site
 
 This app is publicly available at:
@@ -33,6 +49,7 @@ The current app renders and downloads cubes locally in the browser.
 
 - Numbering and language preferences are stored in browser `localStorage`.
 - `server/visualcube/` contains copied VisualCube-derived code and should remain under LGPL-compatible terms.
+- `frontend/bld-scrambler/` contains copied/modified `helloluxi/bld-scr` lineage code and should remain under GPL-3.0 terms.
 
 ## Added Scrambler Module (Separated)
 

@@ -1,3 +1,17 @@
+REPOSITORY LICENSE NOTICE
+
+This repository contains mixed-license components and derived works.
+
+- VisualCube-derived files (notably under `server/visualcube/`) follow:
+  GNU Lesser General Public License v3.0 or later (LGPL-3.0-or-later).
+- bld-scr-derived files (notably under `frontend/bld-scrambler/`) follow:
+  GNU General Public License v3.0 (GPL-3.0), derived from:
+  https://github.com/helloluxi/bld-scr
+
+See `THIRD_PARTY_NOTICES.md` for component-level attribution details.
+
+----------------------------------------------------------------------
+
 		   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 

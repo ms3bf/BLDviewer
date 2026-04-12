@@ -33,6 +33,8 @@ Notes:
 - Source repository:
   - https://github.com/helloluxi/bld-scr
 - License: GNU General Public License v3.0 (GPL-3.0)
+- Attribution note:
+  - This repository copies and modifies parts of `helloluxi/bld-scr` for local integration/UI wiring.
 - Added files in this repository:
   - `frontend/bld-scrambler/min2phase.js`
   - `frontend/bld-scrambler/cycler.js`
